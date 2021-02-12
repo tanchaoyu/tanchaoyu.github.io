@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>flex</title>
+    <title>flex弹性布局</title>
     <url>/2021/02/12/flex/</url>
     <content><![CDATA[<h3 id="flex弹性布局"><a href="#flex弹性布局" class="headerlink" title="flex弹性布局"></a>flex弹性布局</h3><p>flex弹性布局出来已经有相当长一段时间了，网上的教程也非常多，我是通过 <a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">阮一峰的博客</a> 学习的。我觉得博客上已经写得很好了。我这里只提一下我当时对页面正常流和盒模型都不太了解的时候flex容易让人感到困惑的点。  </p>
 <h4 id="采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。"><a href="#采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。" class="headerlink" title="采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。"></a>采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。</h4><p>根据这句话进行区分，关于flex的样式即可分为两类，一类作用在容器上，一类作用在项目上。注意区分样式是作用在容器还是项目上，避免写在错误的位置上达不到预期的效果。另外由于我当时看文章没有耐心，喜欢边看边写，结果就是在学会容器上的功能以后已经可以达到大部分的布局效果(水平垂直居中等)马马虎虎能看得过去，就没有再看作用在项目上的样式。导致后续在有关项目元素上相关样式的调整一直不知道怎么处理，经常用什么width，margin之类的去处理效果又不是很好，还麻烦，时隔一个月后重新看完了文章才发现本来就有更便捷效果又好的解决方案，从此以后知道看文章马虎不得。  </p>
