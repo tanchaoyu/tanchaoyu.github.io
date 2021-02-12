@@ -1,22 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello World</title>
-    <url>/2021/02/11/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+    <title>flex</title>
+    <url>/2021/02/12/flex/</url>
+    <content><![CDATA[<h3 id="flex弹性布局"><a href="#flex弹性布局" class="headerlink" title="flex弹性布局"></a>flex弹性布局</h3><p>flex弹性布局出来已经有相当长一段时间了，网上的教程也非常多，我是通过 <a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">阮一峰的博客</a> 学习的。我觉得博客上已经写得很好了。我这里只提一下我当时对页面正常流和盒模型都不太了解的时候flex容易让人感到困惑的点。  </p>
+<h4 id="采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。"><a href="#采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。" class="headerlink" title="采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。"></a>采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。</h4><p>根据这句话进行区分，关于flex的样式即可分为两类，一类作用在容器上，一类作用在项目上。注意区分样式是作用在容器还是项目上，避免写在错误的位置上达不到预期的效果。另外由于我当时看文章没有耐心，喜欢边看边写，结果就是在学会容器上的功能以后已经可以达到大部分的布局效果(水平垂直居中等)马马虎虎能看得过去，就没有再看作用在项目上的样式。导致后续在有关项目元素上相关样式的调整一直不知道怎么处理，经常用什么width，margin之类的去处理效果又不是很好，还麻烦，时隔一个月后重新看完了文章才发现本来就有更便捷效果又好的解决方案，从此以后知道看文章马虎不得。  </p>
+<h4 id="要理解flex轴线"><a href="#要理解flex轴线" class="headerlink" title="要理解flex轴线"></a>要理解flex轴线</h4><p>flex里的样式和布局是和轴线有很大关系的，项目也是根据轴线进行排列的。当知道flex存在一条关键的主轴和交叉轴之后再去看flex样式的设置就会觉得很容易理解，他的规定是那么顺其自热。</p>
 ]]></content>
+      <categories>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>CSS</tag>
+      </tags>
   </entry>
   <entry>
-    <title>test</title>
-    <url>/2021/02/11/test/</url>
-    <content><![CDATA[]]></content>
+    <title>城南花已开</title>
+    <url>/2021/02/11/music1/</url>
+    <content><![CDATA[<h3 id="网易云评论最多的纯音乐"><a href="#网易云评论最多的纯音乐" class="headerlink" title="网易云评论最多的纯音乐"></a>网易云评论最多的纯音乐</h3><p>作为第一篇纯音乐的分享，看了半天歌单也决定不了选哪一首。索性把选择交给网友，选出这首评论最多的纯音。“城南花已开，愿君永常在”虽然这首曲背后的故事让人觉得很惋惜，但是这首曲子的曲调并不特别伤感，本意也是作者鼓舞一名患者粉丝而作的，反而有种积极向上的感觉。抛开背景故事不谈，我觉得前半段重复太多我不是很喜欢，中间舒缓的部分比较喜欢。但是哪有单独抛开背景的音乐呢，王国维有云“一切景语皆情语”我觉得音乐也是这样，如果不附带自己或他人的感情，花既是花，草既是草除了本身的姿态并无更多可言之处。<br><img src="https://w.wallhaven.cc/full/m9/wallhaven-m9pq1y.jpg"/></p>
+]]></content>
+      <categories>
+        <category>纯音乐</category>
+      </categories>
+      <tags>
+        <tag>music</tag>
+      </tags>
   </entry>
 </search>
