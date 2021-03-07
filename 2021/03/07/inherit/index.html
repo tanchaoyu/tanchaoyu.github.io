@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JS中的继承 - Cha Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="chamu,"> 
+    <meta name="description" content="为什么要了解继承我个人认为在 JS 中模拟类是没有多大的意义的，因为类在对于编程来说并不必须的。就像我们一开始学习 C 语言，这是一门面向过程的语言，我们不使用类，同样可以完成复杂的功能。只不过后面,"> 
+    <meta name="author" content="tanchaoyu"> 
+    <link rel="alternative" href="atom.xml" title="Cha Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Cha Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">JS中的继承</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">JS中的继承</h1>
+        <div class="stuff">
+            <span>三月 07, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="为什么要了解继承"><a href="#为什么要了解继承" class="headerlink" title="为什么要了解继承"></a>为什么要了解继承</h3><p>我个人认为在 JS 中模拟类是没有多大的意义的，因为类在对于编程来说并不必须的。就像我们一开始学习 C 语言，这是一门面向过程的语言，我们不使用类，同样可以完成复杂的功能。只不过后面接触到面向对象的思想，类这个设计模式对于面向对象实现十分优秀，根深蒂固的影响使得我们不断怀疑自己，使用面向对象过程中不使用类是不是就犯了大忌，于是就有了诸多蹩脚的模拟类的行为。现在我们应该至少从思想上打破类对于面向对象的束缚，因为它只不过是实现面向对象的一种途径(而不是唯一途径)。因为我们在 JS 中，通过原型去实现面向对象(封装，继承，多态)的方式也同样十分优秀。</p>
+<h3 id="继承分类"><a href="#继承分类" class="headerlink" title="继承分类"></a>继承分类</h3><img src="https://pic2.zhimg.com/80/v2-005cadd6c25c74a8278bcce368b28301_720w.jpg">  
+先来个整体印象。如图所示，JS中继承可以按照是否使用object.create函数，将继承分成两部分
+
+<p>其中，原型链继承和原型式继承有一样的优缺点，构造函数继承与寄生式继承也相互对应。寄生组合继承基于 Object.create, 同时优化了组合继承，成为了完美的继承方式。ES6 Class Extends 的结果与寄生组合继承基本一致，但是实现方案又略有不同。</p>
+<h3 id="必要了解的一些知识"><a href="#必要了解的一些知识" class="headerlink" title="必要了解的一些知识"></a>必要了解的一些知识</h3><p>了解 JS 的原型继承，那必须对 JS 的原型(prototype)有基本的知识，不然无法真正理解。除此之外还有过程中使用到的一些功能。</p>
+<h4 id="new-的过程都在干些什么？"><a href="#new-的过程都在干些什么？" class="headerlink" title="new 的过程都在干些什么？"></a>new 的过程都在干些什么？</h4><p>自己手写一个 new</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">New</span>(<span class="params">father,...arg</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">let</span> arge = [...arg];</span><br><span class="line">    <span class="keyword">let</span> res = &#123;&#125;;</span><br><span class="line">   <span class="built_in">Object</span>.setprototype(res,father);</span><br><span class="line">       <span class="keyword">let</span> result = father.apply(res,arge);</span><br><span class="line">       <span class="keyword">if</span>(result <span class="keyword">instanceof</span> obj)&#123;</span><br><span class="line">          <span class="keyword">return</span> result;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span>&#123;</span><br><span class="line">           <span class="keyword">return</span> res;</span><br><span class="line">       &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>创建一个空对象</li>
+<li>通过空对象的<strong>proto</strong>或 object.setprototype()设置为 father.prototype</li>
+<li>调用 father.apply({},arg)(this 绑定在新创建的对象中)</li>
+<li>返回对象</li>
+</ol>
+<h4 id="call-apply-的过程在干什么？"><a href="#call-apply-的过程在干什么？" class="headerlink" title="call/apply 的过程在干什么？"></a>call/apply 的过程在干什么？</h4><p>手写 call，需要懂得一些 this 的知识</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.mycall = <span class="function"><span class="keyword">function</span>(<span class="params">obj,...arg</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">let</span> arge = [...arg];</span><br><span class="line">    obj.fn = <span class="built_in">this</span>;</span><br><span class="line">    <span class="keyword">let</span> res = obj.fn(arge);</span><br><span class="line">    obj.fn = <span class="literal">undefined</span>;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="instanceof-是怎么判断的？"><a href="#instanceof-是怎么判断的？" class="headerlink" title="instanceof 是怎么判断的？"></a>instanceof 是怎么判断的？</h4><p>说白了就是原型链查找</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">instance</span>(<span class="params">son,father</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        son = <span class="built_in">Object</span>.getPrototypeOf(son);</span><br><span class="line">        <span class="keyword">if</span>(!son)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(son == father.prototype)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="object-create-在干嘛？"><a href="#object-create-在干嘛？" class="headerlink" title="object.create 在干嘛？"></a>object.create 在干嘛？</h4><p>利用一个空对象作为中介，将某个对象直接赋值给空对象构造函数的原型。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">object</span>(<span class="params">obj</span>) </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">F</span>(<span class="params"></span>) </span>&#123; &#125;</span><br><span class="line">  F.prototype = obj</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> F()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="继承的实现"><a href="#继承的实现" class="headerlink" title="继承的实现"></a>继承的实现</h3><p>在啰嗦了一大堆之后终于可以进入本篇的正题</p>
+<h4 id="原型链继承"><a href="#原型链继承" class="headerlink" title="原型链继承"></a>原型链继承</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Father</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.prototy = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line">Father.prototype.getprototy = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.prototy;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Son</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.prototy = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line">Son.prototype.getprototy = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.prototy;</span><br><span class="line">&#125;</span><br><span class="line">Son.prototype = <span class="keyword">new</span> Father();</span><br><span class="line"><span class="keyword">let</span> son1 = <span class="keyword">new</span> Son();</span><br><span class="line"><span class="built_in">console</span>.log(son1.getprototy());<span class="comment">//false</span></span><br><span class="line"><span class="built_in">console</span>.log(son1.__proto__.getprototy());<span class="comment">//true</span></span><br><span class="line"><span class="built_in">console</span>.log(son1 <span class="keyword">instanceof</span> Father);<span class="comment">//true</span></span><br></pre></td></tr></table></figure>
+<p>优点</p>
+<ul>
+<li>父类方法可以复用<br>缺点</li>
+<li>父类的引用属性会被所有子类实例共享，多个实例对引用类型的操作会被篡改</li>
+<li>子类构建实例时不能向父类传递参数</li>
+</ul>
+<h4 id="子类构建实例时不能向父类传递参数"><a href="#子类构建实例时不能向父类传递参数" class="headerlink" title="子类构建实例时不能向父类传递参数"></a>子类构建实例时不能向父类传递参数</h4><p>思想的精髓在于用父类去增强子类(你被强化啦！快~)</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Father2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.color = <span class="string">&quot;black&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Son2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    Father2.call(<span class="built_in">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> son2 = <span class="keyword">new</span> Son2();</span><br><span class="line"><span class="built_in">console</span>.log(son2.color);<span class="comment">//black</span></span><br><span class="line"><span class="built_in">console</span>.log(son2 <span class="keyword">instanceof</span> Father2);<span class="comment">//false</span></span><br></pre></td></tr></table></figure>
+<p>创建子类实例时通过 call 调用构造函数，于是 son 的每个实例都会将 Father2 中的属性复制一份，解决了原型链继承中多实例相互影响的问题。<br>优点</p>
+<ul>
+<li>父类的引用属性不会被共享</li>
+<li>子类构建实例时可以向父类传递参数<br>缺点</li>
+<li>只能继承父类的实例属性和方法，不能继承原型属性/方法</li>
+<li>无法实现复用，每个子类都有父类实例函数的副本，影响性能</li>
+<li>我认为还应该加上在 prototype 上没有体现继承的关联</li>
+</ul>
+<h4 id="组合继承"><a href="#组合继承" class="headerlink" title="组合继承"></a>组合继承</h4><p>组合上述两种方法就是组合继承。用原型链实现对原型属性和方法的继承，用借用构造函数技术来实现实例属性的继承。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Father3</span>(<span class="params">name,age</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.name = name;</span><br><span class="line">    <span class="built_in">this</span>.age = age;</span><br><span class="line">&#125;</span><br><span class="line">Father3.prototype.getName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.name;</span><br><span class="line">&#125;</span><br><span class="line">Father3.prototype.getAge = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.age;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Son3</span>(<span class="params">name,age</span>)</span>&#123;</span><br><span class="line">    Father3.call(<span class="built_in">this</span>,name,age);</span><br><span class="line">    <span class="built_in">this</span>.weight = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line">Son3.prototype = <span class="keyword">new</span> Father3();</span><br><span class="line">Son3.prototype.constructor = Son3;</span><br><span class="line">Son3.prototype.getWeight = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.weight;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> father3 = <span class="keyword">new</span> Father3(<span class="string">&#x27;father&#x27;</span>,<span class="number">30</span>);</span><br><span class="line"><span class="keyword">let</span> son3 = <span class="keyword">new</span> Son3(<span class="string">&#x27;son&#x27;</span>,<span class="number">2</span>);</span><br><span class="line"><span class="built_in">console</span>.log(father3.getName());<span class="comment">//father</span></span><br><span class="line"><span class="built_in">console</span>.log(son3.getName());<span class="comment">//son</span></span><br><span class="line"><span class="built_in">console</span>.log(son3.getAge());<span class="comment">//2</span></span><br><span class="line"><span class="built_in">console</span>.log(son3.getWeight());<span class="comment">//1</span></span><br></pre></td></tr></table></figure>
+<p>优点</p>
+<ul>
+<li>父类的方法可以被复用</li>
+<li>父类的引用属性不会被共享</li>
+<li>子类构建实例时可以向父类传递参数<br>缺点</li>
+<li>两次调用 Father3()，在创建子类实例对象的时候每一个实例其原型中会存在两份相同的父类实例的属性/方法。这种被覆盖的情况造成了性能上的浪费。</li>
+</ul>
+<h4 id="寄生继承"><a href="#寄生继承" class="headerlink" title="寄生继承"></a>寄生继承</h4><p>使用原型式继承获得一份目标对象的浅拷贝，然后增强了这个浅拷贝的能力。<br>优缺点其实和原型式继承一样，寄生式继承说白了就是能在拷贝来的对象上加点方法，也就是所谓增强能力。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createSon</span>(<span class="params">father</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">let</span> son = <span class="built_in">Object</span>.create(father);</span><br><span class="line">    son.getName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> son;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> Father5 = &#123;</span><br><span class="line">    name:<span class="string">&quot;father&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> son5 = createSon(Father5);</span><br><span class="line">son5.name = <span class="string">&#x27;son&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(son5.getName());<span class="comment">//son</span></span><br><span class="line"><span class="built_in">console</span>.log(son5 <span class="keyword">instanceof</span> createSon);<span class="comment">//false</span></span><br></pre></td></tr></table></figure>
+<h4 id="组合寄生继承"><a href="#组合寄生继承" class="headerlink" title="组合寄生继承"></a>组合寄生继承</h4><p>组合继承会有两次调用父类的构造函数而造成浪费的缺点，寄生组合继承就可以解决这个问题。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">inheritPrototype</span>(<span class="params">son, father</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 修正子类原型对象指针，指向父类原型的一个副本</span></span><br><span class="line">    son.prototype = <span class="built_in">Object</span>.create(father.prototype);</span><br><span class="line">    <span class="comment">// 增强对象，弥补因重写原型而失去的默认的constructor属性</span></span><br><span class="line">    son.prototype.constructor = son;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">Father4</span>(<span class="params">name</span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.name = name;</span><br><span class="line">  &#125;</span><br><span class="line">  Father4.prototype.getName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">this</span>.name;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">Son4</span>(<span class="params">name,age</span>)</span>&#123;</span><br><span class="line">    Father4.call(<span class="built_in">this</span>,name);</span><br><span class="line">    <span class="built_in">this</span>.age = age;</span><br><span class="line">  &#125;</span><br><span class="line">  inheritPrototype(Son4,Father4);</span><br><span class="line">  Son4.prototype.getAge = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">this</span>.age;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">let</span> son4 = <span class="keyword">new</span> Son4(<span class="string">&#x27;son4&#x27;</span>,<span class="number">3</span>);</span><br><span class="line">  <span class="keyword">let</span> father4 = <span class="keyword">new</span> Father4(<span class="string">&#x27;father4&#x27;</span>);</span><br><span class="line">  <span class="built_in">console</span>.log(son4.getName());<span class="comment">//son4</span></span><br><span class="line">  <span class="built_in">console</span>.log(son4.getAge());<span class="comment">//3</span></span><br><span class="line">  <span class="built_in">console</span>.log(son4 <span class="keyword">instanceof</span> Father4)<span class="comment">//true</span></span><br><span class="line">  <span class="built_in">console</span>.log(son4 <span class="keyword">instanceof</span> Son4)<span class="comment">//true</span></span><br><span class="line">  <span class="built_in">console</span>.log(Son4 <span class="keyword">instanceof</span> Father4)<span class="comment">//false,因为在inheritPrototype(Son4,Father4)中，没有修改Son4的__proto__</span></span><br><span class="line">  <span class="built_in">console</span>.log(<span class="built_in">Object</span>.getPrototypeOf(Son4))<span class="comment">//[Function]/ƒ () &#123; [native code] &#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/110175302">JavaScript 继承的八种写法</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='false'
+        data-ci='ed47e9e17904a537cc41'
+        data-cs='5f8fda8f4f6bba9c3032bbdf566941f310aac9e4'
+        data-r='tanchaoyu.github.io'
+        data-o='tanchaoyu'
+        data-a='tanchaoyu'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>
