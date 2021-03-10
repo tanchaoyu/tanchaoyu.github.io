@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>flex弹性布局</title>
-    <url>/2021/02/12/flex/</url>
-    <content><![CDATA[<h3 id="flex弹性布局"><a href="#flex弹性布局" class="headerlink" title="flex弹性布局"></a>flex弹性布局</h3><p>flex弹性布局出来已经有相当长一段时间了，网上的教程也非常多，我是通过 <a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">阮一峰的博客</a> 学习的。我觉得博客上已经写得很好了。我这里只提一下我当时对页面正常流和盒模型都不太了解的时候flex容易让人感到困惑的点。  </p>
-<h4 id="采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。"><a href="#采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。" class="headerlink" title="采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。"></a>采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。</h4><p>根据这句话进行区分，关于flex的样式即可分为两类，一类作用在容器上，一类作用在项目上。注意区分样式是作用在容器还是项目上，避免写在错误的位置上达不到预期的效果。另外由于我当时看文章没有耐心，喜欢边看边写，结果就是在学会容器上的功能以后已经可以达到大部分的布局效果(水平垂直居中等)马马虎虎能看得过去，就没有再看作用在项目上的样式。导致后续在有关项目元素上相关样式的调整一直不知道怎么处理，经常用什么width，margin之类的去处理效果又不是很好，还麻烦，时隔一个月后重新看完了文章才发现本来就有更便捷效果又好的解决方案，从此以后知道看文章马虎不得。  </p>
-<h4 id="要理解flex轴线"><a href="#要理解flex轴线" class="headerlink" title="要理解flex轴线"></a>要理解flex轴线</h4><p>flex里的样式和布局是和轴线有很大关系的，项目也是根据轴线进行排列的。当知道flex存在一条关键的主轴和交叉轴之后再去看flex样式的设置就会觉得很容易理解，他的规定是那么顺其自热。</p>
-]]></content>
-      <categories>
-        <category>前端</category>
-      </categories>
-      <tags>
-        <tag>CSS</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>前端发布订阅模式</title>
     <url>/2021/03/07/EventEmitter/</url>
     <content><![CDATA[<h3 id="什么是发布订阅模式"><a href="#什么是发布订阅模式" class="headerlink" title="什么是发布订阅模式"></a>什么是发布订阅模式</h3><p>比较官方的解释是：基于一个事件（主题）通道，希望接收通知的对象 Subscriber 通过自定义事件订阅主题，被激活事件的对象 Publisher 通过发布主题事件的方式通知各个订阅该主题的 Subscriber 对象。然而我觉着这个解释并不那么通俗易懂，这里放一张网上的图来辅助理解<br><img src="https://user-gold-cdn.xitu.io/2018/8/29/165844227f32dac6?imageslim"><br>按照我个人比较直白的理解，发布订阅模式这个词就很容易让我联想到以前的邮箱订阅的报纸，这个报纸厂就是我们订阅的目标，每当这个报纸厂发布了新的一期报纸，他就通过邮箱(也就是通俗的通道)通知订阅了报纸的用户，用户取完报纸之后该做什么，那就是用户自己的问题了。有了这个想法之后，把这个模式套入我们前端日常开发的逻辑之中，便会得出一些问题新的解决方案。浏览器的一些 API 如 click 事件，我们可以通过在用户点击 UI 之后获取到这个事件，然后执行一些交互效果，这算不算是一个简单的一对一的发布订阅？我自己的理解应该是的，UI 即发布者，通过事件通知开发者，然后做出相应。一对一的情况是这样，那么一对多呢？这时我又想起来事件监听(addEventListener)，初学的时候用原生 JS 开发一个网页，头顶的导航栏跳转至不同的页面。如果一个个添加事件不仅代码啰嗦不好维护且挂载太多事件会对浏览器造成负担，于是就在父元素上添加事件监听，通过事件冒泡和 currentTarget 判断点击的真正元素，进而跳转至特定的界面。当时只觉得方便，现在感觉这其实也是一种发布订阅模式，根据发布事件的不同执行的订阅操作。</p>
@@ -32,60 +18,8 @@
 <li>Compile (模版编译)</li>
 </ol>
 <h4 id="父子组件通信"><a href="#父子组件通信" class="headerlink" title="父子组件通信"></a>父子组件通信</h4><p>Vue 中，父组件通过 props 向子组件传递数据（自上而下的单向数据流）。父子组件之间的通信，通过自定义事件即 $on , $emit 来实现（子组件 $emit，父组件 $on)。<br>原理其实就是 $emit 发布更新通知，而 $on 订阅接收通知。Vue 中还实现了 $once（一次监听），$off（取消订阅）。</p>
-<pre>
-    // 订阅
-vm.$on('test', function (msg) {
-    console.log(msg)
-})
-
-// 发布
-vm.$emit('test', 'hi')
-</pre>
-<h3 id="自己实现简单的发布订阅"><a href="#自己实现简单的发布订阅" class="headerlink" title="自己实现简单的发布订阅"></a>自己实现简单的发布订阅</h3><pre>
-class EventEmitter {
-    constructor(){
-        this.event = {}
-    }
-    on(eventName,fn){
-        if(this.event[eventName]){
-            this.event[eventName].push(fn);
-        }
-        else{
-            this.event[eventName] = [fn];
-        }
-    }
-    emit(eventName){
-        if(this.event[eventName]){
-            for(let fn of this.event[eventName]){
-                fn();
-            }
-        }
-    }
-    remove(eventName,fn){
-        if(this.event[eventName]){
-            this.event[eventName] = this.event[eventName].filter(fun=>fun!=fn);
-        }
-    }
-}
-let em = new EventEmitter();
-function happy(){
-    console.log('happy');
-}
-function happy2(){
-    console.log('happy2');
-}
-function said(){
-    console.log('said');
-}
-em.on('sayhappy',happy)
-em.on('saysaid',said)
-em.emit('sayhappy');
-em.emit('saysaid');
-em.on('sayhappy',happy2)
-em.emit('sayhappy');
-em.remove('saysaid',said)
-em.emit('saysaid');
-</pre>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">    <span class="comment">// 订阅</span></span><br><span class="line">vm.$on(<span class="string">&#x27;test&#x27;</span>, <span class="function"><span class="keyword">function</span> (<span class="params">msg</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(msg)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 发布</span></span><br><span class="line">vm.$emit(<span class="string">&#x27;test&#x27;</span>, <span class="string">&#x27;hi&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="自己实现简单的发布订阅"><a href="#自己实现简单的发布订阅" class="headerlink" title="自己实现简单的发布订阅"></a>自己实现简单的发布订阅</h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EventEmitter</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.event = &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="title">on</span>(<span class="params">eventName,fn</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">this</span>.event[eventName])&#123;</span><br><span class="line">            <span class="built_in">this</span>.event[eventName].push(fn);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="built_in">this</span>.event[eventName] = [fn];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="title">emit</span>(<span class="params">eventName</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">this</span>.event[eventName])&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">let</span> fn <span class="keyword">of</span> <span class="built_in">this</span>.event[eventName])&#123;</span><br><span class="line">                fn();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="title">remove</span>(<span class="params">eventName,fn</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">this</span>.event[eventName])&#123;</span><br><span class="line">            <span class="built_in">this</span>.event[eventName] = <span class="built_in">this</span>.event[eventName].filter(<span class="function"><span class="params">fun</span>=&gt;</span>fun!=fn);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> em = <span class="keyword">new</span> EventEmitter();</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">happy</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;happy&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">happy2</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;happy2&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">said</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;said&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line">em.on(<span class="string">&#x27;sayhappy&#x27;</span>,happy)</span><br><span class="line">em.on(<span class="string">&#x27;saysaid&#x27;</span>,said)</span><br><span class="line">em.emit(<span class="string">&#x27;sayhappy&#x27;</span>);</span><br><span class="line">em.emit(<span class="string">&#x27;saysaid&#x27;</span>);</span><br><span class="line">em.on(<span class="string">&#x27;sayhappy&#x27;</span>,happy2)</span><br><span class="line">em.emit(<span class="string">&#x27;sayhappy&#x27;</span>);</span><br><span class="line">em.remove(<span class="string">&#x27;saysaid&#x27;</span>,said)</span><br><span class="line">em.emit(<span class="string">&#x27;saysaid&#x27;</span>);</span><br></pre></td></tr></table></figure>
 <p>结果：<img src="http://120.76.61.201:9999/eventemitter.png"><br>发布订阅模式并不难，难的是如何考虑到合适的时机去使用。技能上的差距或许还可以靠努力追上，但思想上的差距我觉得应该只有靠多方便知识的累积并且不断思考才能有些许提升吧。或者这就是业内大佬能设计出这些绝妙的框架的原因，和他们差距还是很大，还是应该多学习。</p>
 <h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://segmentfault.com/a/1190000019722065">JavaScript 设计模式（六）：观察者模式与发布订阅模式</a>  </p>
 <p><a href="https://www.jianshu.com/p/e0575e17de2a">一个例子 - 看尽并手写JS发布订阅模式</a></p>
@@ -95,6 +29,20 @@ em.emit('saysaid');
       </categories>
       <tags>
         <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>flex弹性布局</title>
+    <url>/2021/02/12/flex/</url>
+    <content><![CDATA[<h3 id="flex弹性布局"><a href="#flex弹性布局" class="headerlink" title="flex弹性布局"></a>flex弹性布局</h3><p>flex弹性布局出来已经有相当长一段时间了，网上的教程也非常多，我是通过 <a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">阮一峰的博客</a> 学习的。我觉得博客上已经写得很好了。我这里只提一下我当时对页面正常流和盒模型都不太了解的时候flex容易让人感到困惑的点。  </p>
+<h4 id="采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。"><a href="#采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。" class="headerlink" title="采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。"></a>采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。</h4><p>根据这句话进行区分，关于flex的样式即可分为两类，一类作用在容器上，一类作用在项目上。注意区分样式是作用在容器还是项目上，避免写在错误的位置上达不到预期的效果。另外由于我当时看文章没有耐心，喜欢边看边写，结果就是在学会容器上的功能以后已经可以达到大部分的布局效果(水平垂直居中等)马马虎虎能看得过去，就没有再看作用在项目上的样式。导致后续在有关项目元素上相关样式的调整一直不知道怎么处理，经常用什么width，margin之类的去处理效果又不是很好，还麻烦，时隔一个月后重新看完了文章才发现本来就有更便捷效果又好的解决方案，从此以后知道看文章马虎不得。  </p>
+<h4 id="要理解flex轴线"><a href="#要理解flex轴线" class="headerlink" title="要理解flex轴线"></a>要理解flex轴线</h4><p>flex里的样式和布局是和轴线有很大关系的，项目也是根据轴线进行排列的。当知道flex存在一条关键的主轴和交叉轴之后再去看flex样式的设置就会觉得很容易理解，他的规定是那么顺其自热。</p>
+]]></content>
+      <categories>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>CSS</tag>
       </tags>
   </entry>
   <entry>
@@ -170,6 +118,52 @@ em.emit('saysaid');
       </categories>
       <tags>
         <tag>JavaScript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>react中的diff算法的看法与困惑</title>
+    <url>/2021/03/09/reactdiff/</url>
+    <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>这篇内容只是我根据官网文档和一些他人博客分析的内容表达我对 react diff 算法的一些理解和疑惑，因为水平有限，相关源码部分并不是很理解。这里只是抛砖引玉，希望各位大佬们对疑惑予以解答，错误予以指正。  </p>
+<h3 id="react-diff-算法的目的"><a href="#react-diff-算法的目的" class="headerlink" title="react diff 算法的目的"></a>react diff 算法的目的</h3><p>当你使用 React ，在任何一个单点时刻你可以认为 render() 函数的作用是创建 React 元素树。在下一个 state 或props 更新时，render() 函数将会返回一个不同的 React 元素树。接下来 React 将会找出如何高效地更新 UI 来匹配最近时刻的 React 元素树。</p>
+<p>目前存在大量通用的方法能够以最少的操作步骤将一个树转化成另外一棵树。然而，这个算法是复杂度为O(n<sup>3</sup>)，其中n 为树中元素的个数。</p>
+<p>如果你在 React 中展示 1000 个元素，那么每次更新都需要10亿次的比较，这样的代价过于昂贵。然而，React 基于以下两个假设实现了时间复杂度为 O(n) 的算法:</p>
+<ol>
+<li>不同类型的两个元素将会产生不同的树。</li>
+<li>开发人员可以使用一个 key prop 来指示在不同的渲染中那个那些元素可以保持稳定。<br>事实上，这些假设在几乎所有的用例中都是有效的。  </li>
+</ol>
+<h3 id="diff算法的过程"><a href="#diff算法的过程" class="headerlink" title="diff算法的过程"></a>diff算法的过程</h3><p>这一部分的内容官网文档同一些主流的博客解析出现不一样的地方。也许是官方文档为了简化说明，能让更多人通俗易懂所做的必要简化。也许是部分博客作者阅读源码后分析出的结果有所出入，这一部分将结合两者进行分析。<br>首先是一篇高阅读量的博客内容<a href="https://www.jianshu.com/p/3ba0822018cf">React之diff算法</a><br>文中将 diff 算法分为三大策略<br>diff策略<br>React用 三大策略 将O(n^3)复杂度 转化为 O(n)复杂度</p>
+<ul>
+<li><p>策略一（tree diff）：<br>Web UI中DOM节点跨层级的移动操作特别少，可以忽略不计。</p>
+</li>
+<li><p>策略二（component diff）：<br>拥有相同类的两个组件 生成相似的树形结构，<br>拥有不同类的两个组件 生成不同的树形结构。</p>
+</li>
+<li><p>策略三（element diff）：<br>对于同一层级的一组子节点，通过唯一id区分。  </p>
+</li>
+</ul>
+<h4 id="然后对三个策略进行了逐一解析，这里我对这篇博客策略一的表述感到困惑，所以仅仅分析策略一。"><a href="#然后对三个策略进行了逐一解析，这里我对这篇博客策略一的表述感到困惑，所以仅仅分析策略一。" class="headerlink" title="然后对三个策略进行了逐一解析，这里我对这篇博客策略一的表述感到困惑，所以仅仅分析策略一。"></a>然后对三个策略进行了逐一解析，这里我对这篇博客策略一的表述感到困惑，所以仅仅分析策略一。</h4><p>tree diff<br>（1）React通过updateDepth对Virtual DOM树进行层级控制。<br>（2）对树分层比较，两棵树 只对同一层次节点 进行比较。如果该节点不存在时，则该节点及其子节点会被完全删除，不会再进一步比较。<br>（3）只需遍历一次，就能完成整棵DOM树的比较。<br><img src="https://pic2.zhimg.com/80/v2-0902dd8939ae03901d2b786cc556a815_720w.jpg"></p>
+<p>那么问题来了，如果DOM节点出现了跨层级操作,diff会咋办呢？<br>答：diff只简单考虑同层级的节点位置变换，如果是跨层级的话，只有创建节点和删除节点的操作。<br><img src="https://upload-images.jianshu.io/upload_images/5518628-41118df156ed8d6e.png"></p>
+<p>如上图所示，以A为根节点的整棵树会被重新创建，而不是移动，因此 官方建议不要进行DOM节点跨层级操作，可以通过CSS隐藏、显示节点，而不是真正地移除、添加DOM节点。</p>
+<p>以上是博客原文，对DOM树进行层级控制没有问题，但是（2）中对树进行分层比较的过程就很令人疑惑了，分层比较是tree diff有自己的方法进行还是需要依赖component diff 和 element diff 进行？如果不同结构的树在tree diff中已经完成了调整那后两步还有什么意义？</p>
+<p>带着这样的疑惑我们再回去阅读官方文档<a href="https://react.html.cn/docs/reconciliation.html">一致性比较（Reconciliation）</a>，由于官方文档的过程也比较长，我这里只罗列一些关键信息进行分析，我理解的diff过程放在后面单独表述。<br>首先是一句很关键的信息：当比较不同的两个树，React 首先比较两个根元素。根据根跟的类型不同，它有不同的行为。然后进行分类处理</p>
+<ul>
+<li>元素类型不相同：无论什么时候，当根元素类型不同时，React 将会销毁原先的树并重写构建新的树。</li>
+<li>DOM元素类型相同：当比较两个相同类型的 React DOM 元素时，React 检查它们的属性（attributes），保留相同的底层 DOM 节点，只更新反生改变的属性（attributes）。</li>
+<li>相同类型的组件: 当一个组件更新的时候，组件实例保持不变，以便在渲染中保持state。React会更新组件实例的属性来匹配新的元素，并在元素实例上调用 componentWillReceiveProps() 和 componentWillUpdate()。接下来， render() 方法会被调用并且diff算法对上一次的结果和新的结果进行递归。</li>
+<li>子元素递归： 这一部分的翻译有点问题，所以放上英文文档原文，并且配上官网代码进行说明。By default, when recursing on the children of a DOM node, React just iterates over both lists of children at the same time and generates a mutation whenever there’s a difference.<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>first<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>second<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>first<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>second<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>third<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+React 会比较两个 <code>&lt;li&gt;first&lt;/li&gt;</code> 树与两个 <code>&lt;li&gt;second&lt;/li&gt;</code> 树，然后插入 <code>&lt;li&gt;third&lt;/li&gt;</code> 树。注意这里文档中对li使用了树这个描述，即便它已经没有子结点，也就是说仍然会完整的执行一遍上面的流程。通过官方的文档，虽然它上面并没有提到层级比较，但是实际的比较的过程确实是按层进行的。博客上所说的三个策略应当结合起来看才是完整的diff算法的过程。从源码来看似乎也是如此<a href="https://segmentfault.com/a/1190000010686582">React源码之Diff算法</a><h3 id="我理解的react-diff算法"><a href="#我理解的react-diff算法" class="headerlink" title="我理解的react diff算法"></a>我理解的react diff算法</h3>我理解的react diff算法应当是把所谓的三大策略结合起来，就达到和官方文档流程一致的效果。即对虚拟DOM进行层级控制，进行分层比较。分层比较的过程中遵循官方文档上的四个步骤。<br>这里再分析一下react为提高分层比较的效率的一些方法。<h4 id="key"><a href="#key" class="headerlink" title="key"></a>key</h4>这个 key 值是在我们使用循环去渲染数据的时候必需指定的值。当子节点有了 key ，React 使用这个 key 去比较原来的树的子节点和之后树的子节点。对于 react 的组件，即便我们没有指定 key 值也会生成一个自带的 key 并进行比较。关于 key 如何提高效率，这里举官网的一个例子。<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">key</span>=<span class="string">&quot;2015&quot;</span>&gt;</span>Duke<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">key</span>=<span class="string">&quot;2016&quot;</span>&gt;</span>Villanova<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">key</span>=<span class="string">&quot;2014&quot;</span>&gt;</span>Connecticut<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">key</span>=<span class="string">&quot;2015&quot;</span>&gt;</span>Duke<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">key</span>=<span class="string">&quot;2016&quot;</span>&gt;</span>Villanova<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+现在 React 知道有’2014’ key 的元素是新的， key为’2015’ 和’2016’的两个元素仅仅只是被移动而已。如果没有指定 key 值 react 将会比较每一个节点并进行修改，这样来看是不是极大的提高了效率？知道 key 的作用之后就不难理解为什么在 react 中使用索引作为 key 的情况下 react 会发出警告了。<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">key</span>=<span class="string">&quot;0&quot;</span>&gt;</span>Duke<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">key</span>=<span class="string">&quot;1&quot;</span>&gt;</span>Villanova<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">key</span>=<span class="string">&quot;0&quot;</span>&gt;</span>Connecticut<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">key</span>=<span class="string">&quot;1&quot;</span>&gt;</span>Duke<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">key</span>=<span class="string">&quot;2&quot;</span>&gt;</span>Villanova<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+我们稍微改变一下官网的例子，改用索引作为 key 看看会发生什么。没错，你会发现当你在需要渲染的数组里插入元素时 key 就会发生改变。当 key 没有办法与元素进行一一对应时就失去了比较的优势，并且这个比较的过程还会变得不可预测。<h4 id="shouldComponentUpdate"><a href="#shouldComponentUpdate" class="headerlink" title="shouldComponentUpdate"></a>shouldComponentUpdate</h4>进行 diff 算法比较时，我们的组件很有可能是 props 和 state 都没有发生变化，那么可想而知就是整个组件很有可能是没有变化的，再通过 diff 重新再生成DOM节点无异于浪费时间。而 shouldComponentUpdate 这个声明周期函数允许我们自行判断组件是否需要更新，从而提高效率。<img src="https://pic1.zhimg.com/80/v2-6e443913477c19490b738141b24d309c_720w.jpg">
+由图可知，shouldComponentUpdate在第一步调用得到nextState之后调用，因为nextState也是它的其中一个参数嘛~这个函数很重要，它是我们性能优化的一个很关键的点：由图可以看到，当shouldComponentUpdate返回false的时候，下面的一大块都不会被去执行，包括已经被优化的diff算法。  
+
+</li>
+</ul>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p> <a href="https://react.html.cn/docs/reconciliation.html">一致性比较（Reconciliation）</a><br> <a href="https://www.jianshu.com/p/3ba0822018cf">React之diff算法</a><br> <a href="https://segmentfault.com/a/1190000010686582">React源码之Diff算法</a><br> <a href="https://zhuanlan.zhihu.com/p/43566956">从渲染原理到性能优化（二）– 更新渲染</a></p>
+]]></content>
+      <categories>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>react</tag>
       </tags>
   </entry>
 </search>
