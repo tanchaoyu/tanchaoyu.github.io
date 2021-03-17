@@ -32,32 +32,6 @@
       </tags>
   </entry>
   <entry>
-    <title>flex弹性布局</title>
-    <url>/2021/02/12/flex/</url>
-    <content><![CDATA[<h3 id="flex弹性布局"><a href="#flex弹性布局" class="headerlink" title="flex弹性布局"></a>flex弹性布局</h3><p>flex弹性布局出来已经有相当长一段时间了，网上的教程也非常多，我是通过 <a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">阮一峰的博客</a> 学习的。我觉得博客上已经写得很好了。我这里只提一下我当时对页面正常流和盒模型都不太了解的时候flex容易让人感到困惑的点。  </p>
-<h4 id="采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。"><a href="#采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。" class="headerlink" title="采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。"></a>采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。</h4><p>根据这句话进行区分，关于flex的样式即可分为两类，一类作用在容器上，一类作用在项目上。注意区分样式是作用在容器还是项目上，避免写在错误的位置上达不到预期的效果。另外由于我当时看文章没有耐心，喜欢边看边写，结果就是在学会容器上的功能以后已经可以达到大部分的布局效果(水平垂直居中等)马马虎虎能看得过去，就没有再看作用在项目上的样式。导致后续在有关项目元素上相关样式的调整一直不知道怎么处理，经常用什么width，margin之类的去处理效果又不是很好，还麻烦，时隔一个月后重新看完了文章才发现本来就有更便捷效果又好的解决方案，从此以后知道看文章马虎不得。  </p>
-<h4 id="要理解flex轴线"><a href="#要理解flex轴线" class="headerlink" title="要理解flex轴线"></a>要理解flex轴线</h4><p>flex里的样式和布局是和轴线有很大关系的，项目也是根据轴线进行排列的。当知道flex存在一条关键的主轴和交叉轴之后再去看flex样式的设置就会觉得很容易理解，他的规定是那么顺其自热。</p>
-]]></content>
-      <categories>
-        <category>前端</category>
-      </categories>
-      <tags>
-        <tag>CSS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>城南花已开</title>
-    <url>/2021/02/11/music1/</url>
-    <content><![CDATA[<h3 id="网易云评论最多的纯音乐"><a href="#网易云评论最多的纯音乐" class="headerlink" title="网易云评论最多的纯音乐"></a>网易云评论最多的纯音乐</h3><p>作为第一篇纯音乐的分享，看了半天歌单也决定不了选哪一首。索性把选择交给网友，选出这首评论最多的纯音。“城南花已开，愿君永常在”虽然这首曲背后的故事让人觉得很惋惜，但是这首曲子的曲调并不特别伤感，本意也是作者鼓舞一名患者粉丝而作的，反而有种积极向上的感觉。抛开背景故事不谈，我觉得前半段重复太多我不是很喜欢，中间舒缓的部分比较喜欢。但是哪有单独抛开背景的音乐呢，王国维有云“一切景语皆情语”我觉得音乐也是这样，如果不附带自己或他人的感情，花既是花，草既是草除了本身的姿态并无更多可言之处。<br><img src="https://w.wallhaven.cc/full/m9/wallhaven-m9pq1y.jpg"/></p>
-]]></content>
-      <categories>
-        <category>纯音乐</category>
-      </categories>
-      <tags>
-        <tag>music</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JS中的继承</title>
     <url>/2021/03/07/inherit/</url>
     <content><![CDATA[<h3 id="为什么要了解继承"><a href="#为什么要了解继承" class="headerlink" title="为什么要了解继承"></a>为什么要了解继承</h3><p>我个人认为在 JS 中模拟类是没有多大的意义的，因为类在对于编程来说并不必须的。就像我们一开始学习 C 语言，这是一门面向过程的语言，我们不使用类，同样可以完成复杂的功能。只不过后面接触到面向对象的思想，类这个设计模式对于面向对象实现十分优秀，根深蒂固的影响使得我们不断怀疑自己，使用面向对象过程中不使用类是不是就犯了大忌，于是就有了诸多蹩脚的模拟类的行为。现在我们应该至少从思想上打破类对于面向对象的束缚，因为它只不过是实现面向对象的一种途径(而不是唯一途径)。因为我们在 JS 中，通过原型去实现面向对象(封装，继承，多态)的方式也同样十分优秀。</p>
@@ -121,6 +95,20 @@
       </tags>
   </entry>
   <entry>
+    <title>flex弹性布局</title>
+    <url>/2021/02/12/flex/</url>
+    <content><![CDATA[<h3 id="flex弹性布局"><a href="#flex弹性布局" class="headerlink" title="flex弹性布局"></a>flex弹性布局</h3><p>flex弹性布局出来已经有相当长一段时间了，网上的教程也非常多，我是通过 <a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">阮一峰的博客</a> 学习的。我觉得博客上已经写得很好了。我这里只提一下我当时对页面正常流和盒模型都不太了解的时候flex容易让人感到困惑的点。  </p>
+<h4 id="采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。"><a href="#采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。" class="headerlink" title="采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。"></a>采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。</h4><p>根据这句话进行区分，关于flex的样式即可分为两类，一类作用在容器上，一类作用在项目上。注意区分样式是作用在容器还是项目上，避免写在错误的位置上达不到预期的效果。另外由于我当时看文章没有耐心，喜欢边看边写，结果就是在学会容器上的功能以后已经可以达到大部分的布局效果(水平垂直居中等)马马虎虎能看得过去，就没有再看作用在项目上的样式。导致后续在有关项目元素上相关样式的调整一直不知道怎么处理，经常用什么width，margin之类的去处理效果又不是很好，还麻烦，时隔一个月后重新看完了文章才发现本来就有更便捷效果又好的解决方案，从此以后知道看文章马虎不得。  </p>
+<h4 id="要理解flex轴线"><a href="#要理解flex轴线" class="headerlink" title="要理解flex轴线"></a>要理解flex轴线</h4><p>flex里的样式和布局是和轴线有很大关系的，项目也是根据轴线进行排列的。当知道flex存在一条关键的主轴和交叉轴之后再去看flex样式的设置就会觉得很容易理解，他的规定是那么顺其自热。</p>
+]]></content>
+      <categories>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>CSS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>react中的diff算法的看法与困惑</title>
     <url>/2021/03/09/reactdiff/</url>
     <content><![CDATA[<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>这篇内容只是我根据官网文档和一些他人博客分析的内容表达我对 react diff 算法的一些理解和疑惑，因为水平有限，相关源码部分并不是很理解。这里只是抛砖引玉，希望各位大佬们对疑惑予以解答，错误予以指正。  </p>
@@ -164,6 +152,43 @@ React 会比较两个 <code>&lt;li&gt;first&lt;/li&gt;</code> 树与两个 <code
       </categories>
       <tags>
         <tag>react</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>城南花已开</title>
+    <url>/2021/02/11/music1/</url>
+    <content><![CDATA[<h3 id="网易云评论最多的纯音乐"><a href="#网易云评论最多的纯音乐" class="headerlink" title="网易云评论最多的纯音乐"></a>网易云评论最多的纯音乐</h3><p>作为第一篇纯音乐的分享，看了半天歌单也决定不了选哪一首。索性把选择交给网友，选出这首评论最多的纯音。“城南花已开，愿君永常在”虽然这首曲背后的故事让人觉得很惋惜，但是这首曲子的曲调并不特别伤感，本意也是作者鼓舞一名患者粉丝而作的，反而有种积极向上的感觉。抛开背景故事不谈，我觉得前半段重复太多我不是很喜欢，中间舒缓的部分比较喜欢。但是哪有单独抛开背景的音乐呢，王国维有云“一切景语皆情语”我觉得音乐也是这样，如果不附带自己或他人的感情，花既是花，草既是草除了本身的姿态并无更多可言之处。<br><img src="https://w.wallhaven.cc/full/m9/wallhaven-m9pq1y.jpg"/></p>
+]]></content>
+      <categories>
+        <category>纯音乐</category>
+      </categories>
+      <tags>
+        <tag>music</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>快速排序和堆排序</title>
+    <url>/2021/03/11/sort/</url>
+    <content><![CDATA[<h3 id="快速排序和堆排序"><a href="#快速排序和堆排序" class="headerlink" title="快速排序和堆排序"></a>快速排序和堆排序</h3><p>最近对以前课上学到的排序方法忘得非常快，以至于学到的排序算法就只记得这两种了，赶紧写一篇来重复一下记忆，以免这两种都忘记了。<br>首先快速排序和堆排序都是在位的，也就是说进行排序不需要额外的空间(递归需要的除外)。印象中归并排序过程中要创建新的数组，这种需要<br>开辟额外空间的就不是在位的排序算法。这两种排序算法的平均时间复杂度都是Θ(nlogn)，关于时间复杂度的分析，目前也只记得一个迭代法，<br>步骤大概是</p>
+<ol>
+<li>写出递归表达式</li>
+<li>对表达式的右边进行迭代替换，直到不能迭代为止</li>
+<li>整理式子得到结果  </li>
+</ol>
+<p>为了便于理解这里举一个冒泡排序的例子，求排序算法时间复杂度也就是看需要排序的数n与交换比较次数T(n)之间的关系。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">//众所周知T(1) = 0,在最坏的情况下有</span></span><br><span class="line">T(<span class="number">1</span>) = <span class="number">0</span>;</span><br><span class="line">T(<span class="number">2</span>) = <span class="number">1</span>;</span><br><span class="line">T(<span class="number">3</span>) = <span class="number">3</span>;</span><br><span class="line">T(<span class="number">4</span>) = <span class="number">6</span>;</span><br><span class="line"><span class="comment">//是不是发现了什么呢，现在写出递归表达式，也就是第一步</span></span><br><span class="line">T(n) = T(n-<span class="number">1</span>) + n-<span class="number">1</span> <span class="comment">//n&gt;1</span></span><br><span class="line"><span class="comment">//第二步对右边进行迭代</span></span><br><span class="line">T(n) = [T(n-<span class="number">2</span>) + (n-<span class="number">2</span>)] + (n-<span class="number">1</span>)</span><br><span class="line">...</span><br><span class="line">T(n) = T(<span class="number">1</span>) + n(n-<span class="number">1</span>) -<span class="number">1</span>-<span class="number">2</span>-<span class="number">3</span>-...-(n-<span class="number">1</span>)<span class="comment">//等差数列求和得</span></span><br><span class="line">T(n) = n(n-<span class="number">1</span>) - n(n-<span class="number">1</span>)/<span class="number">2</span> = n(n-<span class="number">1</span>)/<span class="number">2</span></span><br></pre></td></tr></table></figure>
+<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>快速排序的思想在于招一个中心轴，然后把比这个轴小的数放在左边，大的放在右边。这样一轮调整就结束了，接着对左右两边的数进行递归，<br>就得到一个有序的结果。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">quicksort</span>(<span class="params">arr,start,end</span>)</span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(start&gt;=end)&#123;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> index = part(arr,start,end)</span><br><span class="line">    quicksort(arr,start,index - <span class="number">1</span>);</span><br><span class="line">    quicksort(arr,index+<span class="number">1</span>,end);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">part</span>(<span class="params">arr,start,end</span>)</span>&#123;</span><br><span class="line">    <span class="comment">//pivotValue基准值，选什么都可以这里选最后一个</span></span><br><span class="line">    <span class="keyword">let</span> pivotValue = arr[end];</span><br><span class="line">    <span class="keyword">let</span> pivotIndex = start;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i = start;i&lt;end;i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(arr[i]&lt;pivotValue)&#123;</span><br><span class="line">            <span class="comment">//交换，解构赋值</span></span><br><span class="line">            [arr[i],arr[pivotIndex]] = [arr[pivotIndex],arr[i]];</span><br><span class="line">            pivotIndex++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//最后把基准值换过来，index左边小于基准值，右边大于基准值</span></span><br><span class="line">    [arr[pivotIndex],arr[end]] = [arr[end],arr[pivotIndex]];</span><br><span class="line">    <span class="keyword">return</span> pivotIndex;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> arr = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">4</span>,<span class="number">6</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">56</span>,<span class="number">7</span>,<span class="number">23</span>,<span class="number">4</span>,<span class="number">6</span>,<span class="number">5</span>,<span class="number">7</span>,<span class="number">57</span>];</span><br><span class="line">quicksort(arr,<span class="number">0</span>,arr.length-<span class="number">1</span>);</span><br><span class="line"><span class="built_in">console</span>.log(arr);</span><br></pre></td></tr></table></figure>
+<p>需要注意的是快速排序的效果十分依赖中心轴选的好不好，如果每次选的中心轴都恰好是最大或者最小的数，在这种情况下就会发现和上面的冒泡排序<br>是一模一样的结果。</p>
+<h3 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h3><p>堆是一种除了最后一层以外近似完全二叉树的数据结构，学习堆排序是变治法这一章中有了解到。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">heapsort</span>(<span class="params">arr</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> res = maxheap(arr);</span><br><span class="line">    <span class="built_in">console</span>.log(res);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> len = res.length-<span class="number">1</span>;len&gt;-<span class="number">1</span>;len--)&#123;</span><br><span class="line">        <span class="comment">//交换堆顶元素，并且不参与下一轮堆调整</span></span><br><span class="line">        [res[<span class="number">0</span>],res[len]] = [res[len],res[<span class="number">0</span>]];</span><br><span class="line">        changeheap(arr,<span class="number">0</span>,len);</span><br><span class="line">    &#125;</span><br><span class="line">  <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">maxheap</span>(<span class="params">arr</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> res = arr;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> index = <span class="built_in">Math</span>.floor(res.length/<span class="number">2</span>); index &gt; -<span class="number">1</span>; index--) &#123;</span><br><span class="line">      changeheap(res,index,res.length);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">changeheap</span>(<span class="params">arr, index,len</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> left = index * <span class="number">2</span> + <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">let</span> right = index * <span class="number">2</span> + <span class="number">2</span>;</span><br><span class="line">  <span class="keyword">let</span> max = index;</span><br><span class="line">  <span class="keyword">if</span> (left&lt;len &amp;&amp; arr[left] &gt; arr[max]) &#123;</span><br><span class="line">    max = left;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span>(right&lt;len &amp;&amp; arr[right] &gt; arr[max])&#123;</span><br><span class="line">    max = right;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span>(max != index)&#123;</span><br><span class="line">      <span class="comment">//如果当前值不是最大就和子节点最大的交换，和谁交换就调整谁</span></span><br><span class="line">      [arr[index],arr[max]] = [arr[max],arr[index]];</span><br><span class="line">      changeheap(arr,max,len);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> test = [<span class="number">9</span>,<span class="number">5</span>,<span class="number">3</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">3</span>,<span class="number">1</span>];</span><br><span class="line"><span class="built_in">console</span>.log(heapsort(test));</span><br></pre></td></tr></table></figure>
+<p>进行堆排序的过程首先要先建堆，构建大堆顶或者小堆顶都可。然后把堆顶和堆尾元素进行交换(交换的堆尾不参与堆调整)，然后进行堆调整,对于堆调整引起的子结点的变化的进行递归调整。</p>
+]]></content>
+      <categories>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>JavaScript</tag>
       </tags>
   </entry>
 </search>
