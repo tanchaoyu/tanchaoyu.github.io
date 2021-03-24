@@ -56,8 +56,8 @@
 <h4 id="二进制传输，分帧传输"><a href="#二进制传输，分帧传输" class="headerlink" title="二进制传输，分帧传输"></a>二进制传输，分帧传输</h4><p>帧：HTTP/2 数据通信的最小单位消息：指 HTTP/2 中逻辑上的 HTTP 消息。例如请求和响应等，消息由一个或多个帧组成。</p>
 <p>流：存在于连接中的一个虚拟通道。流可以承载双向消息，每个流都有一个唯一的整数ID。</p>
 <p>在http1.1中一个http请求是一个整体，包含头部信息(head)和请求数据(data)，在http2.0中将请求信息进一步拆分为帧，并标上流的id。如head1，data1。浏览器可以同时将这些帧放到tcp管道中进行报文传输。在http2的会通过流的id对这些帧进行处理重组，再交由应用层进行处理。</p>
-<h4 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h4><p>在http1.1中，如果想要同时获得多个http请求的相应，就必须同时建立和维护多个tcp连接。在http2.0中所有请求都通过一个tcp连接处理。数据流以消息的形式发送，而消息又由一个或多个帧组成，多个帧之间可以乱序发送，因为根据帧首部的流标识可以重新组装(得益于分帧传输，单个连接上可以并行交错的请求和响应，之间互不干扰)。在HTTP/2中，每个请求都可以带一个31bit的优先值，0表示最高优先级， 数值越大优先级越低。有了这个优先值，客户端和服务器就可以在处理不同的流时采取不同的策略，以最优的方式发送流、消息和帧。<br><img src="../img/http1.png"></p>
-<h4 id="服务端推送"><a href="#服务端推送" class="headerlink" title="服务端推送"></a>服务端推送</h4><p>在我们平时访问一个网页的情况下，会向服务器请求这个html文件，然后根据html上的link，src等属性去加载需要的css、js和所需要的图片等资源。在http2.0中服务端推送一定程度上改变了这种固定的模式。服务端可以在客户端请求一个资源时，向它推送另外的资源。比如在客户端请求index.html文件时，把main.css和main.js文件也推送回去。<br><img src="../img/http2.png"><br>另外需要补充的是,服务端可以主动推送，客户端也有权利选择是否接收。如果服务端推送的资源已经被浏览器缓存过，浏览器可以通过发送RST_STREAM帧来拒收。主动推送也遵守同源策略，换句话说，服务器不能随便将第三方资源推送给客户端，而必须是经过双方确认才行。</p>
+<h4 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h4><p>在http1.1中，如果想要同时获得多个http请求的相应，就必须同时建立和维护多个tcp连接。在http2.0中所有请求都通过一个tcp连接处理。数据流以消息的形式发送，而消息又由一个或多个帧组成，多个帧之间可以乱序发送，因为根据帧首部的流标识可以重新组装(得益于分帧传输，单个连接上可以并行交错的请求和响应，之间互不干扰)。在HTTP/2中，每个请求都可以带一个31bit的优先值，0表示最高优先级， 数值越大优先级越低。有了这个优先值，客户端和服务器就可以在处理不同的流时采取不同的策略，以最优的方式发送流、消息和帧。<br><img src="https://github.com/tanchaoyu/tanchaoyu.github.io/blob/main/img/http1.png"></p>
+<h4 id="服务端推送"><a href="#服务端推送" class="headerlink" title="服务端推送"></a>服务端推送</h4><p>在我们平时访问一个网页的情况下，会向服务器请求这个html文件，然后根据html上的link，src等属性去加载需要的css、js和所需要的图片等资源。在http2.0中服务端推送一定程度上改变了这种固定的模式。服务端可以在客户端请求一个资源时，向它推送另外的资源。比如在客户端请求index.html文件时，把main.css和main.js文件也推送回去。<br><img src="https://github.com/tanchaoyu/tanchaoyu.github.io/blob/main/img/http2.png"><br>另外需要补充的是,服务端可以主动推送，客户端也有权利选择是否接收。如果服务端推送的资源已经被浏览器缓存过，浏览器可以通过发送RST_STREAM帧来拒收。主动推送也遵守同源策略，换句话说，服务器不能随便将第三方资源推送给客户端，而必须是经过双方确认才行。</p>
 <h4 id="头部压缩"><a href="#头部压缩" class="headerlink" title="头部压缩"></a>头部压缩</h4><p>http每次发送请求都会携带头部信息，但是这一部分信息很多是重复的。HTTP/2在客户端和服务器端使用“首部表”来跟踪和存储之前发送的键－值对，对于相同的数据，不再通过每次请求和响应发送。首部表在HTTP/2的连接存续期内始终存在，由客户端和服务器共同渐进地更新。每个新的首部键－值对要么被追加到当前表的末尾，要么替换表中之前的值。<br><img src="https://pic3.zhimg.com/80/v2-1573194744d005dd110bbeac3a9b5246_720w.jpg"></p>
 <h3 id="https"><a href="#https" class="headerlink" title="https"></a>https</h3><p>在应用层与传输层之间添加一层SSL/TLS协议使得客户端与服务端在连接后使用对称加密进行数据传输<br><img src="https://pic1.zhimg.com/80/v2-5e2241fae8b593ff7f3b3a308ef81c10_720w.png"><br>这一张图具体表现了https请求的流程，首先是客户端向服务端发送请求，然后服务端给客户端发送自己在权威机构申请的证书。客户端在获取到证书后<br>对证书进行验证。在确定证书无误之后用从证书信息中获取到的服务端的公钥进行非对称加密接下来的传输信息，如：你好，接下来我们用对称加密传输数据吧，<br>这是密钥1和密钥2你选一个吧。服务端收到后选择一种加密方式进行加密回复确认内容，接下来就使用相应的加密方式进行数据传输。那么客户端是如何验证<br>证书的真伪的呢？我们来看这张图<br><img src="https://pic3.zhimg.com/v2-5c0610bf16a7baf9bae7c6787dd7756a_r.jpg"><br>首先在客户端获取到证书之后会在本地进行查询解密数字签名所需要机构的公钥，因为权威的机构是比较少的，所以权威机构的公钥都被内置在操作系统或者浏览器中。如果客户端在本地没有找到相应的公钥，就会判断信息来源不可靠。从这一点也可以看出，如果在本地胡乱安装非权威机构的公钥是非常危险的，因为这为伪造相对应的假证书提供了便利。在找到相对应的权威机构的公钥之后验证还没有结束，在解密出信息摘要之后，还会对证书信息执行与发证机构相同的hash算法，再对比与信息摘要是否相同，如果不相同则判定用户信息遭到了篡改。如果有中间人拦截了证书，并用发证机构的公钥解密数字签名得出信息摘要，并且修改了证书的内容。但是因为不知道发证机构的私钥没有办法生成对应的数字签名，如果把原数字前面发送给客户端，那改变后的证书内容经过hash算法生成的信息摘要比较和数字签名解密出的信息摘要必然不相同，所以就避免了拦截攻击。</p>
 ]]></content>
@@ -66,18 +66,6 @@
       </categories>
       <tags>
         <tag>计算机网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>城南花已开</title>
-    <url>/2021/02/11/music1/</url>
-    <content><![CDATA[<h3 id="网易云评论最多的纯音乐"><a href="#网易云评论最多的纯音乐" class="headerlink" title="网易云评论最多的纯音乐"></a>网易云评论最多的纯音乐</h3><p>作为第一篇纯音乐的分享，看了半天歌单也决定不了选哪一首。索性把选择交给网友，选出这首评论最多的纯音。“城南花已开，愿君永常在”虽然这首曲背后的故事让人觉得很惋惜，但是这首曲子的曲调并不特别伤感，本意也是作者鼓舞一名患者粉丝而作的，反而有种积极向上的感觉。抛开背景故事不谈，我觉得前半段重复太多我不是很喜欢，中间舒缓的部分比较喜欢。但是哪有单独抛开背景的音乐呢，王国维有云“一切景语皆情语”我觉得音乐也是这样，如果不附带自己或他人的感情，花既是花，草既是草除了本身的姿态并无更多可言之处。<br><img src="https://w.wallhaven.cc/full/m9/wallhaven-m9pq1y.jpg"/></p>
-]]></content>
-      <categories>
-        <category>纯音乐</category>
-      </categories>
-      <tags>
-        <tag>music</tag>
       </tags>
   </entry>
   <entry>
@@ -141,6 +129,18 @@
       </categories>
       <tags>
         <tag>JavaScript</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>城南花已开</title>
+    <url>/2021/02/11/music1/</url>
+    <content><![CDATA[<h3 id="网易云评论最多的纯音乐"><a href="#网易云评论最多的纯音乐" class="headerlink" title="网易云评论最多的纯音乐"></a>网易云评论最多的纯音乐</h3><p>作为第一篇纯音乐的分享，看了半天歌单也决定不了选哪一首。索性把选择交给网友，选出这首评论最多的纯音。“城南花已开，愿君永常在”虽然这首曲背后的故事让人觉得很惋惜，但是这首曲子的曲调并不特别伤感，本意也是作者鼓舞一名患者粉丝而作的，反而有种积极向上的感觉。抛开背景故事不谈，我觉得前半段重复太多我不是很喜欢，中间舒缓的部分比较喜欢。但是哪有单独抛开背景的音乐呢，王国维有云“一切景语皆情语”我觉得音乐也是这样，如果不附带自己或他人的感情，花既是花，草既是草除了本身的姿态并无更多可言之处。<br><img src="https://w.wallhaven.cc/full/m9/wallhaven-m9pq1y.jpg"/></p>
+]]></content>
+      <categories>
+        <category>纯音乐</category>
+      </categories>
+      <tags>
+        <tag>music</tag>
       </tags>
   </entry>
   <entry>
@@ -217,8 +217,8 @@ React 会比较两个 <code>&lt;li&gt;first&lt;/li&gt;</code> 树与两个 <code
   <entry>
     <title>身份验证用cookie还是token？</title>
     <url>/2021/03/24/token/</url>
-    <content><![CDATA[<h3 id="cookie"><a href="#cookie" class="headerlink" title="cookie"></a>cookie</h3><p>&nbsp;&nbsp;作为浏览器早期的用户身份验证方案，其实我自己使用的情况并不多。也可能并不是使用的不多，是因为使用了cookie的身份验证方案，作为一个前端开发人员甚至没有任何的察觉。说到cookie这里就不得不提在服务端里cookie的一位好兄弟session，cookie和session合作完成了用户验证的过程，如图<br><img src="//upload-images.jianshu.io/upload_images/2846604-a8fa7e1bef110bd6.png"><br>&nbsp;&nbsp;用户在登录时，将自己的用户名信息和密码发送到后端，服务端在数据库验证检查无误后创建session。而这个session呢可以把用户的信息，如姓名、年龄和权限等保存起来，同时服务端维持session的状态，并把session的唯一标识sessionid写入cookie中(服务端是可以操纵cookie的，这就是有可能服务端实现了用户验证的方案而前端开发人员却浑然不知的原因)。在后续的请求当中，都会在请求头中携带cookie的信息。而服务端获取其中的sessionid后，便可以通过验证相应的session来区分是属于哪个用户。<br>&nbsp;&nbsp;但这便利的登录功能背后可能隐藏着安全的风险，伪造请求攻击(CRSF)就是利用这一点，伪装成被信任的用户向服务端请求操作，而服务端无法识别是否是真实的用户操作时，就能达到目的。例如，在A登录了网站B(xxx.com)后，网站B就在cookie中保存了A的sessionid。此时用户A已经成功登录，是被网站B所信任的用户。但用户A又访问了网站C，在网站C中的一张图片的src中的信息为(xxx.com/operation=”xxx”)。而此时用户A在不知情的情况下便完成了在网站B上的操作，因为是通过cookie进行的身份验证，而此时cookie还没有失效。那么如果把接口都改为post那是否就安全了呢。实际上并不是，因为完全可以在网站C中通过模拟表单来完成请求。随着时间的推移，set-cookie中的默认属性改为了Lax,简单来说就是限制对第三方网站cookie。如图<br><img src="https://upload-images.jianshu.io/upload_images/20672535-6da0e9b9a9b8bc95.png"></p>
-<h3 id="token"><a href="#token" class="headerlink" title="token"></a>token</h3><img src="https://upload-images.jianshu.io/upload_images/2846604-cf06c14fb4af243b.png">
+    <content><![CDATA[<h3 id="cookie"><a href="#cookie" class="headerlink" title="cookie"></a>cookie</h3><p>&nbsp;&nbsp;作为浏览器早期的用户身份验证方案，其实我自己使用的情况并不多。也可能并不是使用的不多，是因为使用了cookie的身份验证方案，作为一个前端开发人员甚至没有任何的察觉。说到cookie这里就不得不提在服务端里cookie的一位好兄弟session，cookie和session合作完成了用户验证的过程，如图<br><img src="https://github.com/tanchaoyu/tanchaoyu.github.io/blob/main/img/cookie.png"><br>&nbsp;&nbsp;用户在登录时，将自己的用户名信息和密码发送到后端，服务端在数据库验证检查无误后创建session。而这个session呢可以把用户的信息，如姓名、年龄和权限等保存起来，同时服务端维持session的状态，并把session的唯一标识sessionid写入cookie中(服务端是可以操纵cookie的，这就是有可能服务端实现了用户验证的方案而前端开发人员却浑然不知的原因)。在后续的请求当中，都会在请求头中携带cookie的信息。而服务端获取其中的sessionid后，便可以通过验证相应的session来区分是属于哪个用户。<br>&nbsp;&nbsp;但这便利的登录功能背后可能隐藏着安全的风险，伪造请求攻击(CRSF)就是利用这一点，伪装成被信任的用户向服务端请求操作，而服务端无法识别是否是真实的用户操作时，就能达到目的。例如，在A登录了网站B(xxx.com)后，网站B就在cookie中保存了A的sessionid。此时用户A已经成功登录，是被网站B所信任的用户。但用户A又访问了网站C，在网站C中的一张图片的src中的信息为(xxx.com/operation=”xxx”)。而此时用户A在不知情的情况下便完成了在网站B上的操作，因为是通过cookie进行的身份验证，而此时cookie还没有失效。那么如果把接口都改为post那是否就安全了呢。实际上并不是，因为完全可以在网站C中通过模拟表单来完成请求。随着时间的推移，set-cookie中的默认属性改为了Lax,简单来说就是限制对第三方网站cookie。如图<br><img src="https://github.com/tanchaoyu/tanchaoyu.github.io/blob/main/img/samesite.png"></p>
+<h3 id="token"><a href="#token" class="headerlink" title="token"></a>token</h3><img src="https://github.com/tanchaoyu/tanchaoyu.github.io/blob/main/img/token.png">
 token的解决方案在于，用户在登录之后服务端会返回一串经过加密后的token信息。客户端将token信息保存起来，在后续的请求中在http的头部信息中携带token信息，服务端在收到后对token信息进行解密验证，判断token信息是否有效和获取用户信息等。咋一看与cookie和session的机制并没有什么不同，但实际上在服务端不需要维护session的状态，减轻的对服务端的负担。token的使用非常灵活，可以设置两个token，一个用于维持用户的登录状态(RefreshToken),一个用于请求时发送(accessToken)。当accessToken过期之后可以通过验证RefreshToken获取新的accessToken进行请求。当RefreshToken也过期之后再进行重新登录。像是RefreshToken就适合保存在localstorage中，值得一提的是localstorage也受到同源策略的保护
 <img src="https://image-static.segmentfault.com/379/307/3793073884-56950753e65db_fix732">
 
