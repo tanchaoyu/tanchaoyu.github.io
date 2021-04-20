@@ -63,7 +63,7 @@ DOM和canvas之间的切换
     <div class='main'>
         <h1 class="title">前端五子棋</h1>
         <div class="stuff">
-            <span>三月 21, 2021</span>
+            <span>四月 20, 2021</span>
             
   <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E6%9D%82%E9%A1%B9/" rel="tag">杂项</a></li></ul>
 
@@ -81,6 +81,7 @@ DOM和canvas之间的切换
 <h3 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h3><p>总的来说首先按照棋盘的特性分为两个部分的内容，我这里用两个类实现。一个类负责五子棋的游戏逻辑，棋盘的数据状态的修改和管理。另一个则根据用户的事件，来负责渲染棋盘，也就是页面的渲染逻辑都在这个类中实现。网页中只接收事件，根据事件调用类中的方法。</p>
 <h4 id="渲染的实现"><a href="#渲染的实现" class="headerlink" title="渲染的实现"></a>渲染的实现</h4><p>先说canvas版本，个人感觉canvas相比于DOM来说是更容易实现的。这里我们使用两层canvas来实现整个棋盘，底下一层作为棋盘的背景，上面一层用来放置棋子。这么做的原因主要是因为考虑到悔棋的操作，需要调用canvas的擦除方法。如果棋盘和棋子在同一个canvas上，那么在擦除棋子的时候会把棋盘的背景也一并擦除掉。在有了canvas版本的基础之后，DOM版本的棋子实现也非常简单。思路同canvas的没有太大区别，一样是计算点击事件的位置去生成对应的棋子。两个版本之前的切换，我的方法是判断两个版本下棋步栈之间的第一个差异位，消除差异后的内容，然后再同步内容。这样即可复用第一个差异之前的部分，避免全部重新渲染。但是这个应该不是最好的方法。</p>
 <h4 id="逻辑的实现"><a href="#逻辑的实现" class="headerlink" title="逻辑的实现"></a>逻辑的实现</h4><p>至于逻辑的实现我感觉更没有什么值得一说的内容了。五子棋的胜负逻辑无非是判断四个方向上有没有连续5个一样的棋子。棋盘的逻辑也可以用一个二维数组来进行模拟。使用两个栈来保存正常下棋的步骤，另一个保存悔棋的步骤实现连续悔棋的操作。</p>
+<h3 id="致歉"><a href="#致歉" class="headerlink" title="致歉"></a>致歉</h3><p>并非没有思路，实在是写不下去了。奈何面试没有通过，总觉得浪费了自己时间去设计这么一个小游戏。虽然缺陷很多，我自己水平也很有限，但终究是花了时间但是没有结果，所以可能也不是那么值得分享的东西。如果还有对五子棋感兴趣的可以去我的GitHub看具体的实现过程。</p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">

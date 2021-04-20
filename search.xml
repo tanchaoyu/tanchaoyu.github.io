@@ -1,60 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>http,http2和https</title>
-    <url>/2021/03/21/http/</url>
-    <content><![CDATA[<h3 id="http"><a href="#http" class="headerlink" title="http"></a>http</h3><p>在最开始的http协议中连接是没办法进行复用的，这里的连接指的是tcp连接。即没发送一个http请求就要经历创建tcp连接，等待http的处理，关闭tcp连接的过程。并且新建tcp连接要从新执行慢开始的过程，对于大文件传输速度有影响。所以在http1.1中就推出了Keep-Alive并在http1.1中头部信息Connection中默认开启。Keep-Alive使得在一个http请求完成以后不立即关闭tcp连接，而保存tcp连接一段时间(keepalive_timeout控制，超时无http请求则关闭)，使得在时间内新的http请求可以复用这个tcp连接避免了每一个http请求都重新连接tcp的消耗。且因为同一域名对同时保存tcp连接的数量的限制，如果有多个http请求时不可能都创建一个tcp连接去发送请求，http1.1中允许在一个tcp内一个http请求还没完全相应时发送下一个请求(但与http2不同的是，相应严格按照请求的先后顺序)。</p>
-<h4 id="当保持长连接时，如何判断一次请求已经完成？"><a href="#当保持长连接时，如何判断一次请求已经完成？" class="headerlink" title="当保持长连接时，如何判断一次请求已经完成？"></a>当保持长连接时，如何判断一次请求已经完成？</h4><p>Content-Length<br>Content-Length表示实体内容的长度。浏览器通过这个字段来判断当前请求的数据是否已经全部接收。<br>所以，当浏览器请求的是一个静态资源时，即服务器能明确知道返回内容的长度时，可以设置Content-Length来控制请求的结束。但当服务器并不知道请求结果的长度时，如一个动态的页面或者数据，Content-Length就无法解决上面的问题，这个时候就需要用到Transfer-Encoding字段。</p>
-<p>Transfer-Encoding<br>Transfer-Encoding是指传输编码，在上面的问题中，当服务端无法知道实体内容的长度时，就可以通过指定Transfer-Encoding: chunked来告知浏览器当前的编码是将数据分成一块一块传递的。当然, 还可以指定Transfer-Encoding: gzip, chunked表明实体内容不仅是gzip压缩的，还是分块传递的。最后，当浏览器接收到一个长度为0的chunked时， 知道当前请求内容已全部接收。</p>
-<h4 id="复用tcp连接对大文件传输的优势"><a href="#复用tcp连接对大文件传输的优势" class="headerlink" title="复用tcp连接对大文件传输的优势"></a>复用tcp连接对大文件传输的优势</h4><p>这就要说到tcp的慢开始和拥塞避免算法。假设传输允许的拥塞窗口的上限是24个，初始为1。发送方每收到一个确认报文(ack)就增加一倍的拥塞窗口然后开始下一轮传输。这样拥塞窗口的数量随传输轮次指数级增加，当超过慢开始门限值时，便启动拥塞控制算法，拥塞窗口数量增加改为线性增加。但是在我们进行http请求时，一般往往是很难达到拥塞窗口的上限的，此时关闭tcp连接，重新创建tcp连接进行大文件传输的话，初始的传输速度就会比较慢，从而影响传输的速度。</p>
-<h3 id="http2-0"><a href="#http2-0" class="headerlink" title="http2.0"></a>http2.0</h3><p>http2.0提供了很多新特性，极大提高了传输速度</p>
-<h4 id="二进制传输，分帧传输"><a href="#二进制传输，分帧传输" class="headerlink" title="二进制传输，分帧传输"></a>二进制传输，分帧传输</h4><p>帧：HTTP/2 数据通信的最小单位消息：指 HTTP/2 中逻辑上的 HTTP 消息。例如请求和响应等，消息由一个或多个帧组成。</p>
-<p>流：存在于连接中的一个虚拟通道。流可以承载双向消息，每个流都有一个唯一的整数ID。</p>
-<p>在http1.1中一个http请求是一个整体，包含头部信息(head)和请求数据(data)，在http2.0中将请求信息进一步拆分为帧，并标上流的id。如head1，data1。浏览器可以同时将这些帧放到tcp管道中进行报文传输。在http2的会通过流的id对这些帧进行处理重组，再交由应用层进行处理。</p>
-<h4 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h4><p>在http1.1中，如果想要同时获得多个http请求的相应，就必须同时建立和维护多个tcp连接。在http2.0中所有请求都通过一个tcp连接处理。数据流以消息的形式发送，而消息又由一个或多个帧组成，多个帧之间可以乱序发送，因为根据帧首部的流标识可以重新组装(得益于分帧传输，单个连接上可以并行交错的请求和响应，之间互不干扰)。在HTTP/2中，每个请求都可以带一个31bit的优先值，0表示最高优先级， 数值越大优先级越低。有了这个优先值，客户端和服务器就可以在处理不同的流时采取不同的策略，以最优的方式发送流、消息和帧。<br><img src="https://raw.githubusercontent.com/tanchaoyu/tanchaoyu.github.io/main/img/http1.png"></p>
-<h4 id="服务端推送"><a href="#服务端推送" class="headerlink" title="服务端推送"></a>服务端推送</h4><p>在我们平时访问一个网页的情况下，会向服务器请求这个html文件，然后根据html上的link，src等属性去加载需要的css、js和所需要的图片等资源。在http2.0中服务端推送一定程度上改变了这种固定的模式。服务端可以在客户端请求一个资源时，向它推送另外的资源。比如在客户端请求index.html文件时，把main.css和main.js文件也推送回去。<br><img src="https://raw.githubusercontent.com/tanchaoyu/tanchaoyu.github.io/main/img/http2.png"><br>另外需要补充的是,服务端可以主动推送，客户端也有权利选择是否接收。如果服务端推送的资源已经被浏览器缓存过，浏览器可以通过发送RST_STREAM帧来拒收。主动推送也遵守同源策略，换句话说，服务器不能随便将第三方资源推送给客户端，而必须是经过双方确认才行。</p>
-<h4 id="头部压缩"><a href="#头部压缩" class="headerlink" title="头部压缩"></a>头部压缩</h4><p>http每次发送请求都会携带头部信息，但是这一部分信息很多是重复的。HTTP/2在客户端和服务器端使用“首部表”来跟踪和存储之前发送的键－值对，对于相同的数据，不再通过每次请求和响应发送。首部表在HTTP/2的连接存续期内始终存在，由客户端和服务器共同渐进地更新。每个新的首部键－值对要么被追加到当前表的末尾，要么替换表中之前的值。<br><img src="https://pic3.zhimg.com/80/v2-1573194744d005dd110bbeac3a9b5246_720w.jpg"></p>
-<h3 id="https"><a href="#https" class="headerlink" title="https"></a>https</h3><p>在应用层与传输层之间添加一层SSL/TLS协议使得客户端与服务端在连接后使用对称加密进行数据传输<br><img src="https://pic1.zhimg.com/80/v2-5e2241fae8b593ff7f3b3a308ef81c10_720w.png"><br>这一张图具体表现了https请求的流程，首先是客户端向服务端发送请求，然后服务端给客户端发送自己在权威机构申请的证书。客户端在获取到证书后<br>对证书进行验证。在确定证书无误之后用从证书信息中获取到的服务端的公钥进行非对称加密接下来的传输信息，如：你好，接下来我们用对称加密传输数据吧，<br>这是密钥1和密钥2你选一个吧。服务端收到后选择一种加密方式进行加密回复确认内容，接下来就使用相应的加密方式进行数据传输。那么客户端是如何验证<br>证书的真伪的呢？我们来看这张图<br><img src="https://pic3.zhimg.com/v2-5c0610bf16a7baf9bae7c6787dd7756a_r.jpg"><br>首先在客户端获取到证书之后会在本地进行查询解密数字签名所需要机构的公钥，因为权威的机构是比较少的，所以权威机构的公钥都被内置在操作系统或者浏览器中。如果客户端在本地没有找到相应的公钥，就会判断信息来源不可靠。从这一点也可以看出，如果在本地胡乱安装非权威机构的公钥是非常危险的，因为这为伪造相对应的假证书提供了便利。在找到相对应的权威机构的公钥之后验证还没有结束，在解密出信息摘要之后，还会对证书信息执行与发证机构相同的hash算法，再对比与信息摘要是否相同，如果不相同则判定用户信息遭到了篡改。如果有中间人拦截了证书，并用发证机构的公钥解密数字签名得出信息摘要，并且修改了证书的内容。但是因为不知道发证机构的私钥没有办法生成对应的数字签名，如果把原数字前面发送给客户端，那改变后的证书内容经过hash算法生成的信息摘要比较和数字签名解密出的信息摘要必然不相同，所以就避免了拦截攻击。</p>
+    <title>flex弹性布局</title>
+    <url>/2021/02/12/flex/</url>
+    <content><![CDATA[<h3 id="flex弹性布局"><a href="#flex弹性布局" class="headerlink" title="flex弹性布局"></a>flex弹性布局</h3><p>flex弹性布局出来已经有相当长一段时间了，网上的教程也非常多，我是通过 <a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">阮一峰的博客</a> 学习的。我觉得博客上已经写得很好了。我这里只提一下我当时对页面正常流和盒模型都不太了解的时候flex容易让人感到困惑的点。  </p>
+<h4 id="采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。"><a href="#采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。" class="headerlink" title="采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。"></a>采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。</h4><p>根据这句话进行区分，关于flex的样式即可分为两类，一类作用在容器上，一类作用在项目上。注意区分样式是作用在容器还是项目上，避免写在错误的位置上达不到预期的效果。另外由于我当时看文章没有耐心，喜欢边看边写，结果就是在学会容器上的功能以后已经可以达到大部分的布局效果(水平垂直居中等)马马虎虎能看得过去，就没有再看作用在项目上的样式。导致后续在有关项目元素上相关样式的调整一直不知道怎么处理，经常用什么width，margin之类的去处理效果又不是很好，还麻烦，时隔一个月后重新看完了文章才发现本来就有更便捷效果又好的解决方案，从此以后知道看文章马虎不得。  </p>
+<h4 id="要理解flex轴线"><a href="#要理解flex轴线" class="headerlink" title="要理解flex轴线"></a>要理解flex轴线</h4><p>flex里的样式和布局是和轴线有很大关系的，项目也是根据轴线进行排列的。当知道flex存在一条关键的主轴和交叉轴之后再去看flex样式的设置就会觉得很容易理解，他的规定是那么顺其自热。</p>
 ]]></content>
       <categories>
         <category>前端</category>
       </categories>
       <tags>
-        <tag>计算机网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>城南花已开</title>
-    <url>/2021/02/11/music1/</url>
-    <content><![CDATA[<h3 id="网易云评论最多的纯音乐"><a href="#网易云评论最多的纯音乐" class="headerlink" title="网易云评论最多的纯音乐"></a>网易云评论最多的纯音乐</h3><p>作为第一篇纯音乐的分享，看了半天歌单也决定不了选哪一首。索性把选择交给网友，选出这首评论最多的纯音。“城南花已开，愿君永常在”虽然这首曲背后的故事让人觉得很惋惜，但是这首曲子的曲调并不特别伤感，本意也是作者鼓舞一名患者粉丝而作的，反而有种积极向上的感觉。抛开背景故事不谈，我觉得前半段重复太多我不是很喜欢，中间舒缓的部分比较喜欢。但是哪有单独抛开背景的音乐呢，王国维有云“一切景语皆情语”我觉得音乐也是这样，如果不附带自己或他人的感情，花既是花，草既是草除了本身的姿态并无更多可言之处。<br><img src="https://w.wallhaven.cc/full/m9/wallhaven-m9pq1y.jpg"/></p>
-]]></content>
-      <categories>
-        <category>纯音乐</category>
-      </categories>
-      <tags>
-        <tag>music</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>前端五子棋</title>
-    <url>/2021/03/21/gobang/</url>
-    <content><![CDATA[<h3 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h3><p>首先这是一道面试题，之前在面试某公司的时候面试官给我一个周末的时间实现五子棋的一些基本功能，我记得要求有</p>
-<ol>
-<li>悔棋功能</li>
-<li>取消悔棋功能</li>
-<li>DOM和canvas之间的切换</li>
-</ol>
-<p>其余的就是五子棋的规则要求了。因为时间比较紧，又是一道面试题，所以还是有很多考虑不到的地方，还有很多缺陷。这里只是简单概括一下实现的思路。至于面试的结果嘛，应该是后续面的状态不好，知识也有缺陷，总之没有通过面试。但是不分享一下这五子棋面试题实现怪可惜的，希望有缘人碰到能这面试题时，能有一些启发。</p>
-<h3 id="体验地址"><a href="#体验地址" class="headerlink" title="体验地址"></a>体验地址</h3><p><a href="http://120.76.61.201:10001/">http://120.76.61.201:10001/</a></p>
-<h3 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h3><p>总的来说首先按照棋盘的特性分为两个部分的内容，我这里用两个类实现。一个类负责五子棋的游戏逻辑，棋盘的数据状态的修改和管理。另一个则根据用户的事件，来负责渲染棋盘，也就是页面的渲染逻辑都在这个类中实现。网页中只接收事件，根据事件调用类中的方法。</p>
-<h4 id="渲染的实现"><a href="#渲染的实现" class="headerlink" title="渲染的实现"></a>渲染的实现</h4><p>先说canvas版本，个人感觉canvas相比于DOM来说是更容易实现的。这里我们使用两层canvas来实现整个棋盘，底下一层作为棋盘的背景，上面一层用来放置棋子。这么做的原因主要是因为考虑到悔棋的操作，需要调用canvas的擦除方法。如果棋盘和棋子在同一个canvas上，那么在擦除棋子的时候会把棋盘的背景也一并擦除掉。在有了canvas版本的基础之后，DOM版本的棋子实现也非常简单。思路同canvas的没有太大区别，一样是计算点击事件的位置去生成对应的棋子。两个版本之前的切换，我的方法是判断两个版本下棋步栈之间的第一个差异位，消除差异后的内容，然后再同步内容。这样即可复用第一个差异之前的部分，避免全部重新渲染。但是这个应该不是最好的方法。</p>
-<h4 id="逻辑的实现"><a href="#逻辑的实现" class="headerlink" title="逻辑的实现"></a>逻辑的实现</h4><p>至于逻辑的实现我感觉更没有什么值得一说的内容了。五子棋的胜负逻辑无非是判断四个方向上有没有连续5个一样的棋子。棋盘的逻辑也可以用一个二维数组来进行模拟。使用两个栈来保存正常下棋的步骤，另一个保存悔棋的步骤实现连续悔棋的操作。</p>
-]]></content>
-      <categories>
-        <category>前端</category>
-      </categories>
-      <tags>
-        <tag>杂项</tag>
+        <tag>CSS</tag>
       </tags>
   </entry>
   <entry>
@@ -89,52 +46,43 @@
       </tags>
   </entry>
   <entry>
-    <title>快速排序和堆排序</title>
-    <url>/2021/03/11/sort/</url>
-    <content><![CDATA[<h3 id="快速排序和堆排序"><a href="#快速排序和堆排序" class="headerlink" title="快速排序和堆排序"></a>快速排序和堆排序</h3><p>最近对以前课上学到的排序方法忘得非常快，以至于学到的排序算法就只记得这两种了，赶紧写一篇来重复一下记忆，以免这两种都忘记了。<br>首先快速排序和堆排序都是在位的，也就是说进行排序不需要额外的空间(递归需要的除外)。印象中归并排序过程中要创建新的数组，这种需要<br>开辟额外空间的就不是在位的排序算法。这两种排序算法的平均时间复杂度都是Θ(nlogn)，关于时间复杂度的分析，目前也只记得一个迭代法，<br>步骤大概是</p>
+    <title>前端五子棋</title>
+    <url>/2021/04/20/gobang/</url>
+    <content><![CDATA[<h3 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h3><p>首先这是一道面试题，之前在面试某公司的时候面试官给我一个周末的时间实现五子棋的一些基本功能，我记得要求有</p>
 <ol>
-<li>写出递归表达式</li>
-<li>对表达式的右边进行迭代替换，直到不能迭代为止</li>
-<li>整理式子得到结果  </li>
+<li>悔棋功能</li>
+<li>取消悔棋功能</li>
+<li>DOM和canvas之间的切换</li>
 </ol>
-<p>为了便于理解这里举一个冒泡排序的例子，求排序算法时间复杂度也就是看需要排序的数n与交换比较次数T(n)之间的关系。</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">//众所周知T(1) = 0,在最坏的情况下有</span></span><br><span class="line">T(<span class="number">1</span>) = <span class="number">0</span>;</span><br><span class="line">T(<span class="number">2</span>) = <span class="number">1</span>;</span><br><span class="line">T(<span class="number">3</span>) = <span class="number">3</span>;</span><br><span class="line">T(<span class="number">4</span>) = <span class="number">6</span>;</span><br><span class="line"><span class="comment">//是不是发现了什么呢，现在写出递归表达式，也就是第一步</span></span><br><span class="line">T(n) = T(n-<span class="number">1</span>) + n-<span class="number">1</span> <span class="comment">//n&gt;1</span></span><br><span class="line"><span class="comment">//第二步对右边进行迭代</span></span><br><span class="line">T(n) = [T(n-<span class="number">2</span>) + (n-<span class="number">2</span>)] + (n-<span class="number">1</span>)</span><br><span class="line">...</span><br><span class="line">T(n) = T(<span class="number">1</span>) + n(n-<span class="number">1</span>) -<span class="number">1</span>-<span class="number">2</span>-<span class="number">3</span>-...-(n-<span class="number">1</span>)<span class="comment">//等差数列求和得</span></span><br><span class="line">T(n) = n(n-<span class="number">1</span>) - n(n-<span class="number">1</span>)/<span class="number">2</span> = n(n-<span class="number">1</span>)/<span class="number">2</span></span><br></pre></td></tr></table></figure>
-<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>快速排序的思想在于招一个中心轴，然后把比这个轴小的数放在左边，大的放在右边。这样一轮调整就结束了，接着对左右两边的数进行递归，<br>就得到一个有序的结果。</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">quicksort</span>(<span class="params">arr,start,end</span>)</span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(start&gt;=end)&#123;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> index = part(arr,start,end)</span><br><span class="line">    quicksort(arr,start,index - <span class="number">1</span>);</span><br><span class="line">    quicksort(arr,index+<span class="number">1</span>,end);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">part</span>(<span class="params">arr,start,end</span>)</span>&#123;</span><br><span class="line">    <span class="comment">//pivotValue基准值，选什么都可以这里选最后一个</span></span><br><span class="line">    <span class="keyword">let</span> pivotValue = arr[end];</span><br><span class="line">    <span class="keyword">let</span> pivotIndex = start;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i = start;i&lt;end;i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(arr[i]&lt;pivotValue)&#123;</span><br><span class="line">            <span class="comment">//交换，解构赋值</span></span><br><span class="line">            [arr[i],arr[pivotIndex]] = [arr[pivotIndex],arr[i]];</span><br><span class="line">            pivotIndex++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//最后把基准值换过来，index左边小于基准值，右边大于基准值</span></span><br><span class="line">    [arr[pivotIndex],arr[end]] = [arr[end],arr[pivotIndex]];</span><br><span class="line">    <span class="keyword">return</span> pivotIndex;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> arr = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">4</span>,<span class="number">6</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">56</span>,<span class="number">7</span>,<span class="number">23</span>,<span class="number">4</span>,<span class="number">6</span>,<span class="number">5</span>,<span class="number">7</span>,<span class="number">57</span>];</span><br><span class="line">quicksort(arr,<span class="number">0</span>,arr.length-<span class="number">1</span>);</span><br><span class="line"><span class="built_in">console</span>.log(arr);</span><br></pre></td></tr></table></figure>
-<p>需要注意的是快速排序的效果十分依赖中心轴选的好不好，如果每次选的中心轴都恰好是最大或者最小的数，在这种情况下就会发现和上面的冒泡排序<br>是一模一样的结果。</p>
-<h3 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h3><p>堆是一种除了最后一层以外近似完全二叉树的数据结构，学习堆排序是变治法这一章中有了解到。</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">heapsort</span>(<span class="params">arr</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> res = maxheap(arr);</span><br><span class="line">    <span class="built_in">console</span>.log(res);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> len = res.length-<span class="number">1</span>;len&gt;-<span class="number">1</span>;len--)&#123;</span><br><span class="line">        <span class="comment">//交换堆顶元素，并且不参与下一轮堆调整</span></span><br><span class="line">        [res[<span class="number">0</span>],res[len]] = [res[len],res[<span class="number">0</span>]];</span><br><span class="line">        changeheap(arr,<span class="number">0</span>,len);</span><br><span class="line">    &#125;</span><br><span class="line">  <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">maxheap</span>(<span class="params">arr</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> res = arr;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> index = <span class="built_in">Math</span>.floor(res.length/<span class="number">2</span>); index &gt; -<span class="number">1</span>; index--) &#123;</span><br><span class="line">      changeheap(res,index,res.length);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">changeheap</span>(<span class="params">arr, index,len</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> left = index * <span class="number">2</span> + <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">let</span> right = index * <span class="number">2</span> + <span class="number">2</span>;</span><br><span class="line">  <span class="keyword">let</span> max = index;</span><br><span class="line">  <span class="keyword">if</span> (left&lt;len &amp;&amp; arr[left] &gt; arr[max]) &#123;</span><br><span class="line">    max = left;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span>(right&lt;len &amp;&amp; arr[right] &gt; arr[max])&#123;</span><br><span class="line">    max = right;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span>(max != index)&#123;</span><br><span class="line">      <span class="comment">//如果当前值不是最大就和子节点最大的交换，和谁交换就调整谁</span></span><br><span class="line">      [arr[index],arr[max]] = [arr[max],arr[index]];</span><br><span class="line">      changeheap(arr,max,len);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> test = [<span class="number">9</span>,<span class="number">5</span>,<span class="number">3</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">3</span>,<span class="number">1</span>];</span><br><span class="line"><span class="built_in">console</span>.log(heapsort(test));</span><br></pre></td></tr></table></figure>
-<p>进行堆排序的过程首先要先建堆，构建大堆顶或者小堆顶都可。然后把堆顶和堆尾元素进行交换(交换的堆尾不参与堆调整)，然后进行堆调整,对于堆调整引起的子结点的变化的进行递归调整。</p>
+<p>其余的就是五子棋的规则要求了。因为时间比较紧，又是一道面试题，所以还是有很多考虑不到的地方，还有很多缺陷。这里只是简单概括一下实现的思路。至于面试的结果嘛，应该是后续面的状态不好，知识也有缺陷，总之没有通过面试。但是不分享一下这五子棋面试题实现怪可惜的，希望有缘人碰到能这面试题时，能有一些启发。</p>
+<h3 id="体验地址"><a href="#体验地址" class="headerlink" title="体验地址"></a>体验地址</h3><p><a href="http://120.76.61.201:10001/">http://120.76.61.201:10001/</a></p>
+<h3 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h3><p>总的来说首先按照棋盘的特性分为两个部分的内容，我这里用两个类实现。一个类负责五子棋的游戏逻辑，棋盘的数据状态的修改和管理。另一个则根据用户的事件，来负责渲染棋盘，也就是页面的渲染逻辑都在这个类中实现。网页中只接收事件，根据事件调用类中的方法。</p>
+<h4 id="渲染的实现"><a href="#渲染的实现" class="headerlink" title="渲染的实现"></a>渲染的实现</h4><p>先说canvas版本，个人感觉canvas相比于DOM来说是更容易实现的。这里我们使用两层canvas来实现整个棋盘，底下一层作为棋盘的背景，上面一层用来放置棋子。这么做的原因主要是因为考虑到悔棋的操作，需要调用canvas的擦除方法。如果棋盘和棋子在同一个canvas上，那么在擦除棋子的时候会把棋盘的背景也一并擦除掉。在有了canvas版本的基础之后，DOM版本的棋子实现也非常简单。思路同canvas的没有太大区别，一样是计算点击事件的位置去生成对应的棋子。两个版本之前的切换，我的方法是判断两个版本下棋步栈之间的第一个差异位，消除差异后的内容，然后再同步内容。这样即可复用第一个差异之前的部分，避免全部重新渲染。但是这个应该不是最好的方法。</p>
+<h4 id="逻辑的实现"><a href="#逻辑的实现" class="headerlink" title="逻辑的实现"></a>逻辑的实现</h4><p>至于逻辑的实现我感觉更没有什么值得一说的内容了。五子棋的胜负逻辑无非是判断四个方向上有没有连续5个一样的棋子。棋盘的逻辑也可以用一个二维数组来进行模拟。使用两个栈来保存正常下棋的步骤，另一个保存悔棋的步骤实现连续悔棋的操作。</p>
+<h3 id="致歉"><a href="#致歉" class="headerlink" title="致歉"></a>致歉</h3><p>并非没有思路，实在是写不下去了。奈何面试没有通过，总觉得浪费了自己时间去设计这么一个小游戏。虽然缺陷很多，我自己水平也很有限，但终究是花了时间但是没有结果，所以可能也不是那么值得分享的东西。如果还有对五子棋感兴趣的可以去我的GitHub看具体的实现过程。</p>
 ]]></content>
       <categories>
         <category>前端</category>
       </categories>
       <tags>
-        <tag>JavaScript</tag>
+        <tag>杂项</tag>
       </tags>
   </entry>
   <entry>
-    <title>身份验证用cookie还是token？</title>
-    <url>/2021/03/24/token/</url>
-    <content><![CDATA[<h3 id="cookie"><a href="#cookie" class="headerlink" title="cookie"></a>cookie</h3><p>&nbsp;&nbsp;作为浏览器早期的用户身份验证方案，其实我自己使用的情况并不多。也可能并不是使用的不多，是因为使用了cookie的身份验证方案，作为一个前端开发人员甚至没有任何的察觉。说到cookie这里就不得不提在服务端里cookie的一位好兄弟session，cookie和session合作完成了用户验证的过程，如图<br><img src="https://raw.githubusercontent.com/tanchaoyu/tanchaoyu.github.io/main/img/cookie.png"><br>&nbsp;&nbsp;用户在登录时，将自己的用户名信息和密码发送到后端，服务端在数据库验证检查无误后创建session。而这个session呢可以把用户的信息，如姓名、年龄和权限等保存起来，同时服务端维持session的状态，并把session的唯一标识sessionid写入cookie中(服务端是可以操纵cookie的，这就是有可能服务端实现了用户验证的方案而前端开发人员却浑然不知的原因)。在后续的请求当中，都会在请求头中携带cookie的信息。而服务端获取其中的sessionid后，便可以通过验证相应的session来区分是属于哪个用户。<br>&nbsp;&nbsp;但这便利的登录功能背后可能隐藏着安全的风险，伪造请求攻击(CRSF)就是利用这一点，伪装成被信任的用户向服务端请求操作，而服务端无法识别是否是真实的用户操作时，就能达到目的。例如，在A登录了网站B(xxx.com)后，网站B就在cookie中保存了A的sessionid。此时用户A已经成功登录，是被网站B所信任的用户。但用户A又访问了网站C，在网站C中的一张图片的src中的信息为(xxx.com/operation=”xxx”)。而此时用户A在不知情的情况下便完成了在网站B上的操作，因为是通过cookie进行的身份验证，而此时cookie还没有失效。那么如果把接口都改为post那是否就安全了呢。实际上并不是，因为完全可以在网站C中通过模拟表单来完成请求。随着时间的推移，set-cookie中的默认属性改为了Lax,简单来说就是限制对第三方网站cookie。如图<br><img src="https://raw.githubusercontent.com/tanchaoyu/tanchaoyu.github.io/main/img/samesite.png"></p>
-<h3 id="token"><a href="#token" class="headerlink" title="token"></a>token</h3><img src="https://raw.githubusercontent.com/tanchaoyu/tanchaoyu.github.io/main/img/token.png">
-token的解决方案在于，用户在登录之后服务端会返回一串经过加密后的token信息。客户端将token信息保存起来，在后续的请求中在http的头部信息中携带token信息，服务端在收到后对token信息进行解密验证，判断token信息是否有效和获取用户信息等。咋一看与cookie和session的机制并没有什么不同，但实际上在服务端不需要维护session的状态，减轻的对服务端的负担。token的使用非常灵活，可以设置两个token，一个用于维持用户的登录状态(RefreshToken),一个用于请求时发送(accessToken)。当accessToken过期之后可以通过验证RefreshToken获取新的accessToken进行请求。当RefreshToken也过期之后再进行重新登录。像是RefreshToken就适合保存在localstorage中，值得一提的是localstorage也受到同源策略的保护
-<img src="https://image-static.segmentfault.com/379/307/3793073884-56950753e65db_fix732">
-
-<h3 id="都有缺憾"><a href="#都有缺憾" class="headerlink" title="都有缺憾"></a>都有缺憾</h3><p>缺憾来自于XSS攻击，cookie的 HTTP only 虽然保护cookie被恶意js代码获取，但这仅仅是手段之一。如果我能够插入恶意js代码，那我直接插入一段请求代码岂不是简便很很多。所以正因为XSS攻击的危害很大，所以才需要多重的防护手段去防御这种注入代码的行为。我对安全方面了解并不多列出收集到的一些方法</p>
-<ul>
-<li>服务器对输入脚本进行过滤或转码</li>
-<li>前端对输入进行转码或者限制输入</li>
-<li>Cookie使用HttpOnly属性</li>
-<li>添加验证码防止脚本冒充用户提交危险操作</li>
-<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP">CSP</a><br>CSP有如下几个功能：</li>
-</ul>
-<ol>
-<li>限制加载其他域下的资源文件，这样即使黑客插入了一个JS文件，这个文件也是无法被加载的</li>
-<li>禁止向第三方域提交数据，这样用户数据也不会外泄</li>
-<li>禁止执行内联脚本和未授权脚本</li>
-<li>还提供上报机制，这样可以帮助我们尽快发现有哪些XSS攻击，以便尽快修复问题。</li>
-</ol>
+    <title>http,http2和https</title>
+    <url>/2021/03/21/http/</url>
+    <content><![CDATA[<h3 id="http"><a href="#http" class="headerlink" title="http"></a>http</h3><p>在最开始的http协议中连接是没办法进行复用的，这里的连接指的是tcp连接。即没发送一个http请求就要经历创建tcp连接，等待http的处理，关闭tcp连接的过程。并且新建tcp连接要从新执行慢开始的过程，对于大文件传输速度有影响。所以在http1.1中就推出了Keep-Alive并在http1.1中头部信息Connection中默认开启。Keep-Alive使得在一个http请求完成以后不立即关闭tcp连接，而保存tcp连接一段时间(keepalive_timeout控制，超时无http请求则关闭)，使得在时间内新的http请求可以复用这个tcp连接避免了每一个http请求都重新连接tcp的消耗。且因为同一域名对同时保存tcp连接的数量的限制，如果有多个http请求时不可能都创建一个tcp连接去发送请求，http1.1中允许在一个tcp内一个http请求还没完全相应时发送下一个请求(但与http2不同的是，相应严格按照请求的先后顺序)。</p>
+<h4 id="当保持长连接时，如何判断一次请求已经完成？"><a href="#当保持长连接时，如何判断一次请求已经完成？" class="headerlink" title="当保持长连接时，如何判断一次请求已经完成？"></a>当保持长连接时，如何判断一次请求已经完成？</h4><p>Content-Length<br>Content-Length表示实体内容的长度。浏览器通过这个字段来判断当前请求的数据是否已经全部接收。<br>所以，当浏览器请求的是一个静态资源时，即服务器能明确知道返回内容的长度时，可以设置Content-Length来控制请求的结束。但当服务器并不知道请求结果的长度时，如一个动态的页面或者数据，Content-Length就无法解决上面的问题，这个时候就需要用到Transfer-Encoding字段。</p>
+<p>Transfer-Encoding<br>Transfer-Encoding是指传输编码，在上面的问题中，当服务端无法知道实体内容的长度时，就可以通过指定Transfer-Encoding: chunked来告知浏览器当前的编码是将数据分成一块一块传递的。当然, 还可以指定Transfer-Encoding: gzip, chunked表明实体内容不仅是gzip压缩的，还是分块传递的。最后，当浏览器接收到一个长度为0的chunked时， 知道当前请求内容已全部接收。</p>
+<h4 id="复用tcp连接对大文件传输的优势"><a href="#复用tcp连接对大文件传输的优势" class="headerlink" title="复用tcp连接对大文件传输的优势"></a>复用tcp连接对大文件传输的优势</h4><p>这就要说到tcp的慢开始和拥塞避免算法。假设传输允许的拥塞窗口的上限是24个，初始为1。发送方每收到一个确认报文(ack)就增加一倍的拥塞窗口然后开始下一轮传输。这样拥塞窗口的数量随传输轮次指数级增加，当超过慢开始门限值时，便启动拥塞控制算法，拥塞窗口数量增加改为线性增加。但是在我们进行http请求时，一般往往是很难达到拥塞窗口的上限的，此时关闭tcp连接，重新创建tcp连接进行大文件传输的话，初始的传输速度就会比较慢，从而影响传输的速度。</p>
+<h3 id="http2-0"><a href="#http2-0" class="headerlink" title="http2.0"></a>http2.0</h3><p>http2.0提供了很多新特性，极大提高了传输速度</p>
+<h4 id="二进制传输，分帧传输"><a href="#二进制传输，分帧传输" class="headerlink" title="二进制传输，分帧传输"></a>二进制传输，分帧传输</h4><p>帧：HTTP/2 数据通信的最小单位消息：指 HTTP/2 中逻辑上的 HTTP 消息。例如请求和响应等，消息由一个或多个帧组成。</p>
+<p>流：存在于连接中的一个虚拟通道。流可以承载双向消息，每个流都有一个唯一的整数ID。</p>
+<p>在http1.1中一个http请求是一个整体，包含头部信息(head)和请求数据(data)，在http2.0中将请求信息进一步拆分为帧，并标上流的id。如head1，data1。浏览器可以同时将这些帧放到tcp管道中进行报文传输。在http2的会通过流的id对这些帧进行处理重组，再交由应用层进行处理。</p>
+<h4 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h4><p>在http1.1中，如果想要同时获得多个http请求的相应，就必须同时建立和维护多个tcp连接。在http2.0中所有请求都通过一个tcp连接处理。数据流以消息的形式发送，而消息又由一个或多个帧组成，多个帧之间可以乱序发送，因为根据帧首部的流标识可以重新组装(得益于分帧传输，单个连接上可以并行交错的请求和响应，之间互不干扰)。在HTTP/2中，每个请求都可以带一个31bit的优先值，0表示最高优先级， 数值越大优先级越低。有了这个优先值，客户端和服务器就可以在处理不同的流时采取不同的策略，以最优的方式发送流、消息和帧。<br><img src="https://raw.githubusercontent.com/tanchaoyu/tanchaoyu.github.io/main/img/http1.png"></p>
+<h4 id="服务端推送"><a href="#服务端推送" class="headerlink" title="服务端推送"></a>服务端推送</h4><p>在我们平时访问一个网页的情况下，会向服务器请求这个html文件，然后根据html上的link，src等属性去加载需要的css、js和所需要的图片等资源。在http2.0中服务端推送一定程度上改变了这种固定的模式。服务端可以在客户端请求一个资源时，向它推送另外的资源。比如在客户端请求index.html文件时，把main.css和main.js文件也推送回去。<br><img src="https://raw.githubusercontent.com/tanchaoyu/tanchaoyu.github.io/main/img/http2.png"><br>另外需要补充的是,服务端可以主动推送，客户端也有权利选择是否接收。如果服务端推送的资源已经被浏览器缓存过，浏览器可以通过发送RST_STREAM帧来拒收。主动推送也遵守同源策略，换句话说，服务器不能随便将第三方资源推送给客户端，而必须是经过双方确认才行。</p>
+<h4 id="头部压缩"><a href="#头部压缩" class="headerlink" title="头部压缩"></a>头部压缩</h4><p>http每次发送请求都会携带头部信息，但是这一部分信息很多是重复的。HTTP/2在客户端和服务器端使用“首部表”来跟踪和存储之前发送的键－值对，对于相同的数据，不再通过每次请求和响应发送。首部表在HTTP/2的连接存续期内始终存在，由客户端和服务器共同渐进地更新。每个新的首部键－值对要么被追加到当前表的末尾，要么替换表中之前的值。<br><img src="https://pic3.zhimg.com/80/v2-1573194744d005dd110bbeac3a9b5246_720w.jpg"></p>
+<h3 id="https"><a href="#https" class="headerlink" title="https"></a>https</h3><p>在应用层与传输层之间添加一层SSL/TLS协议使得客户端与服务端在连接后使用对称加密进行数据传输<br><img src="https://pic1.zhimg.com/80/v2-5e2241fae8b593ff7f3b3a308ef81c10_720w.png"><br>这一张图具体表现了https请求的流程，首先是客户端向服务端发送请求，然后服务端给客户端发送自己在权威机构申请的证书。客户端在获取到证书后<br>对证书进行验证。在确定证书无误之后用从证书信息中获取到的服务端的公钥进行非对称加密接下来的传输信息，如：你好，接下来我们用对称加密传输数据吧，<br>这是密钥1和密钥2你选一个吧。服务端收到后选择一种加密方式进行加密回复确认内容，接下来就使用相应的加密方式进行数据传输。那么客户端是如何验证<br>证书的真伪的呢？我们来看这张图<br><img src="https://pic3.zhimg.com/v2-5c0610bf16a7baf9bae7c6787dd7756a_r.jpg"><br>首先在客户端获取到证书之后会在本地进行查询解密数字签名所需要机构的公钥，因为权威的机构是比较少的，所以权威机构的公钥都被内置在操作系统或者浏览器中。如果客户端在本地没有找到相应的公钥，就会判断信息来源不可靠。从这一点也可以看出，如果在本地胡乱安装非权威机构的公钥是非常危险的，因为这为伪造相对应的假证书提供了便利。在找到相对应的权威机构的公钥之后验证还没有结束，在解密出信息摘要之后，还会对证书信息执行与发证机构相同的hash算法，再对比与信息摘要是否相同，如果不相同则判定用户信息遭到了篡改。如果有中间人拦截了证书，并用发证机构的公钥解密数字签名得出信息摘要，并且修改了证书的内容。但是因为不知道发证机构的私钥没有办法生成对应的数字签名，如果把原数字前面发送给客户端，那改变后的证书内容经过hash算法生成的信息摘要比较和数字签名解密出的信息摘要必然不相同，所以就避免了拦截攻击。</p>
 ]]></content>
       <categories>
         <category>前端</category>
@@ -144,17 +92,15 @@ token的解决方案在于，用户在登录之后服务端会返回一串经过
       </tags>
   </entry>
   <entry>
-    <title>flex弹性布局</title>
-    <url>/2021/02/12/flex/</url>
-    <content><![CDATA[<h3 id="flex弹性布局"><a href="#flex弹性布局" class="headerlink" title="flex弹性布局"></a>flex弹性布局</h3><p>flex弹性布局出来已经有相当长一段时间了，网上的教程也非常多，我是通过 <a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">阮一峰的博客</a> 学习的。我觉得博客上已经写得很好了。我这里只提一下我当时对页面正常流和盒模型都不太了解的时候flex容易让人感到困惑的点。  </p>
-<h4 id="采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。"><a href="#采用-Flex-布局的元素，称为-Flex-容器（flex-container），简称”容器”。它的所有子元素自动成为容器成员，称为-Flex-项目（flex-item），简称”项目”。" class="headerlink" title="采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。"></a>采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。</h4><p>根据这句话进行区分，关于flex的样式即可分为两类，一类作用在容器上，一类作用在项目上。注意区分样式是作用在容器还是项目上，避免写在错误的位置上达不到预期的效果。另外由于我当时看文章没有耐心，喜欢边看边写，结果就是在学会容器上的功能以后已经可以达到大部分的布局效果(水平垂直居中等)马马虎虎能看得过去，就没有再看作用在项目上的样式。导致后续在有关项目元素上相关样式的调整一直不知道怎么处理，经常用什么width，margin之类的去处理效果又不是很好，还麻烦，时隔一个月后重新看完了文章才发现本来就有更便捷效果又好的解决方案，从此以后知道看文章马虎不得。  </p>
-<h4 id="要理解flex轴线"><a href="#要理解flex轴线" class="headerlink" title="要理解flex轴线"></a>要理解flex轴线</h4><p>flex里的样式和布局是和轴线有很大关系的，项目也是根据轴线进行排列的。当知道flex存在一条关键的主轴和交叉轴之后再去看flex样式的设置就会觉得很容易理解，他的规定是那么顺其自热。</p>
+    <title>城南花已开</title>
+    <url>/2021/02/11/music1/</url>
+    <content><![CDATA[<h3 id="网易云评论最多的纯音乐"><a href="#网易云评论最多的纯音乐" class="headerlink" title="网易云评论最多的纯音乐"></a>网易云评论最多的纯音乐</h3><p>作为第一篇纯音乐的分享，看了半天歌单也决定不了选哪一首。索性把选择交给网友，选出这首评论最多的纯音。“城南花已开，愿君永常在”虽然这首曲背后的故事让人觉得很惋惜，但是这首曲子的曲调并不特别伤感，本意也是作者鼓舞一名患者粉丝而作的，反而有种积极向上的感觉。抛开背景故事不谈，我觉得前半段重复太多我不是很喜欢，中间舒缓的部分比较喜欢。但是哪有单独抛开背景的音乐呢，王国维有云“一切景语皆情语”我觉得音乐也是这样，如果不附带自己或他人的感情，花既是花，草既是草除了本身的姿态并无更多可言之处。<br><img src="https://w.wallhaven.cc/full/m9/wallhaven-m9pq1y.jpg"/></p>
 ]]></content>
       <categories>
-        <category>前端</category>
+        <category>纯音乐</category>
       </categories>
       <tags>
-        <tag>CSS</tag>
+        <tag>music</tag>
       </tags>
   </entry>
   <entry>
@@ -264,6 +210,61 @@ React 会比较两个 <code>&lt;li&gt;first&lt;/li&gt;</code> 树与两个 <code
       </categories>
       <tags>
         <tag>react</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>身份验证用cookie还是token？</title>
+    <url>/2021/03/24/token/</url>
+    <content><![CDATA[<h3 id="cookie"><a href="#cookie" class="headerlink" title="cookie"></a>cookie</h3><p>&nbsp;&nbsp;作为浏览器早期的用户身份验证方案，其实我自己使用的情况并不多。也可能并不是使用的不多，是因为使用了cookie的身份验证方案，作为一个前端开发人员甚至没有任何的察觉。说到cookie这里就不得不提在服务端里cookie的一位好兄弟session，cookie和session合作完成了用户验证的过程，如图<br><img src="https://raw.githubusercontent.com/tanchaoyu/tanchaoyu.github.io/main/img/cookie.png"><br>&nbsp;&nbsp;用户在登录时，将自己的用户名信息和密码发送到后端，服务端在数据库验证检查无误后创建session。而这个session呢可以把用户的信息，如姓名、年龄和权限等保存起来，同时服务端维持session的状态，并把session的唯一标识sessionid写入cookie中(服务端是可以操纵cookie的，这就是有可能服务端实现了用户验证的方案而前端开发人员却浑然不知的原因)。在后续的请求当中，都会在请求头中携带cookie的信息。而服务端获取其中的sessionid后，便可以通过验证相应的session来区分是属于哪个用户。<br>&nbsp;&nbsp;但这便利的登录功能背后可能隐藏着安全的风险，伪造请求攻击(CRSF)就是利用这一点，伪装成被信任的用户向服务端请求操作，而服务端无法识别是否是真实的用户操作时，就能达到目的。例如，在A登录了网站B(xxx.com)后，网站B就在cookie中保存了A的sessionid。此时用户A已经成功登录，是被网站B所信任的用户。但用户A又访问了网站C，在网站C中的一张图片的src中的信息为(xxx.com/operation=”xxx”)。而此时用户A在不知情的情况下便完成了在网站B上的操作，因为是通过cookie进行的身份验证，而此时cookie还没有失效。那么如果把接口都改为post那是否就安全了呢。实际上并不是，因为完全可以在网站C中通过模拟表单来完成请求。随着时间的推移，set-cookie中的默认属性改为了Lax,简单来说就是限制对第三方网站cookie。如图<br><img src="https://raw.githubusercontent.com/tanchaoyu/tanchaoyu.github.io/main/img/samesite.png"></p>
+<h3 id="token"><a href="#token" class="headerlink" title="token"></a>token</h3><img src="https://raw.githubusercontent.com/tanchaoyu/tanchaoyu.github.io/main/img/token.png">
+token的解决方案在于，用户在登录之后服务端会返回一串经过加密后的token信息。客户端将token信息保存起来，在后续的请求中在http的头部信息中携带token信息，服务端在收到后对token信息进行解密验证，判断token信息是否有效和获取用户信息等。咋一看与cookie和session的机制并没有什么不同，但实际上在服务端不需要维护session的状态，减轻的对服务端的负担。token的使用非常灵活，可以设置两个token，一个用于维持用户的登录状态(RefreshToken),一个用于请求时发送(accessToken)。当accessToken过期之后可以通过验证RefreshToken获取新的accessToken进行请求。当RefreshToken也过期之后再进行重新登录。像是RefreshToken就适合保存在localstorage中，值得一提的是localstorage也受到同源策略的保护
+<img src="https://image-static.segmentfault.com/379/307/3793073884-56950753e65db_fix732">
+
+<h3 id="都有缺憾"><a href="#都有缺憾" class="headerlink" title="都有缺憾"></a>都有缺憾</h3><p>缺憾来自于XSS攻击，cookie的 HTTP only 虽然保护cookie被恶意js代码获取，但这仅仅是手段之一。如果我能够插入恶意js代码，那我直接插入一段请求代码岂不是简便很很多。所以正因为XSS攻击的危害很大，所以才需要多重的防护手段去防御这种注入代码的行为。我对安全方面了解并不多列出收集到的一些方法</p>
+<ul>
+<li>服务器对输入脚本进行过滤或转码</li>
+<li>前端对输入进行转码或者限制输入</li>
+<li>Cookie使用HttpOnly属性</li>
+<li>添加验证码防止脚本冒充用户提交危险操作</li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP">CSP</a><br>CSP有如下几个功能：</li>
+</ul>
+<ol>
+<li>限制加载其他域下的资源文件，这样即使黑客插入了一个JS文件，这个文件也是无法被加载的</li>
+<li>禁止向第三方域提交数据，这样用户数据也不会外泄</li>
+<li>禁止执行内联脚本和未授权脚本</li>
+<li>还提供上报机制，这样可以帮助我们尽快发现有哪些XSS攻击，以便尽快修复问题。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>计算机网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>快速排序和堆排序</title>
+    <url>/2021/03/11/sort/</url>
+    <content><![CDATA[<h3 id="快速排序和堆排序"><a href="#快速排序和堆排序" class="headerlink" title="快速排序和堆排序"></a>快速排序和堆排序</h3><p>最近对以前课上学到的排序方法忘得非常快，以至于学到的排序算法就只记得这两种了，赶紧写一篇来重复一下记忆，以免这两种都忘记了。<br>首先快速排序和堆排序都是在位的，也就是说进行排序不需要额外的空间(递归需要的除外)。印象中归并排序过程中要创建新的数组，这种需要<br>开辟额外空间的就不是在位的排序算法。这两种排序算法的平均时间复杂度都是Θ(nlogn)，关于时间复杂度的分析，目前也只记得一个迭代法，<br>步骤大概是</p>
+<ol>
+<li>写出递归表达式</li>
+<li>对表达式的右边进行迭代替换，直到不能迭代为止</li>
+<li>整理式子得到结果  </li>
+</ol>
+<p>为了便于理解这里举一个冒泡排序的例子，求排序算法时间复杂度也就是看需要排序的数n与交换比较次数T(n)之间的关系。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">//众所周知T(1) = 0,在最坏的情况下有</span></span><br><span class="line">T(<span class="number">1</span>) = <span class="number">0</span>;</span><br><span class="line">T(<span class="number">2</span>) = <span class="number">1</span>;</span><br><span class="line">T(<span class="number">3</span>) = <span class="number">3</span>;</span><br><span class="line">T(<span class="number">4</span>) = <span class="number">6</span>;</span><br><span class="line"><span class="comment">//是不是发现了什么呢，现在写出递归表达式，也就是第一步</span></span><br><span class="line">T(n) = T(n-<span class="number">1</span>) + n-<span class="number">1</span> <span class="comment">//n&gt;1</span></span><br><span class="line"><span class="comment">//第二步对右边进行迭代</span></span><br><span class="line">T(n) = [T(n-<span class="number">2</span>) + (n-<span class="number">2</span>)] + (n-<span class="number">1</span>)</span><br><span class="line">...</span><br><span class="line">T(n) = T(<span class="number">1</span>) + n(n-<span class="number">1</span>) -<span class="number">1</span>-<span class="number">2</span>-<span class="number">3</span>-...-(n-<span class="number">1</span>)<span class="comment">//等差数列求和得</span></span><br><span class="line">T(n) = n(n-<span class="number">1</span>) - n(n-<span class="number">1</span>)/<span class="number">2</span> = n(n-<span class="number">1</span>)/<span class="number">2</span></span><br></pre></td></tr></table></figure>
+<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>快速排序的思想在于招一个中心轴，然后把比这个轴小的数放在左边，大的放在右边。这样一轮调整就结束了，接着对左右两边的数进行递归，<br>就得到一个有序的结果。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">quicksort</span>(<span class="params">arr,start,end</span>)</span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span>(start&gt;=end)&#123;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> index = part(arr,start,end)</span><br><span class="line">    quicksort(arr,start,index - <span class="number">1</span>);</span><br><span class="line">    quicksort(arr,index+<span class="number">1</span>,end);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">part</span>(<span class="params">arr,start,end</span>)</span>&#123;</span><br><span class="line">    <span class="comment">//pivotValue基准值，选什么都可以这里选最后一个</span></span><br><span class="line">    <span class="keyword">let</span> pivotValue = arr[end];</span><br><span class="line">    <span class="keyword">let</span> pivotIndex = start;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i = start;i&lt;end;i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(arr[i]&lt;pivotValue)&#123;</span><br><span class="line">            <span class="comment">//交换，解构赋值</span></span><br><span class="line">            [arr[i],arr[pivotIndex]] = [arr[pivotIndex],arr[i]];</span><br><span class="line">            pivotIndex++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//最后把基准值换过来，index左边小于基准值，右边大于基准值</span></span><br><span class="line">    [arr[pivotIndex],arr[end]] = [arr[end],arr[pivotIndex]];</span><br><span class="line">    <span class="keyword">return</span> pivotIndex;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> arr = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">4</span>,<span class="number">6</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">56</span>,<span class="number">7</span>,<span class="number">23</span>,<span class="number">4</span>,<span class="number">6</span>,<span class="number">5</span>,<span class="number">7</span>,<span class="number">57</span>];</span><br><span class="line">quicksort(arr,<span class="number">0</span>,arr.length-<span class="number">1</span>);</span><br><span class="line"><span class="built_in">console</span>.log(arr);</span><br></pre></td></tr></table></figure>
+<p>需要注意的是快速排序的效果十分依赖中心轴选的好不好，如果每次选的中心轴都恰好是最大或者最小的数，在这种情况下就会发现和上面的冒泡排序<br>是一模一样的结果。</p>
+<h3 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h3><p>堆是一种除了最后一层以外近似完全二叉树的数据结构，学习堆排序是变治法这一章中有了解到。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">heapsort</span>(<span class="params">arr</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> res = maxheap(arr);</span><br><span class="line">    <span class="built_in">console</span>.log(res);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> len = res.length-<span class="number">1</span>;len&gt;-<span class="number">1</span>;len--)&#123;</span><br><span class="line">        <span class="comment">//交换堆顶元素，并且不参与下一轮堆调整</span></span><br><span class="line">        [res[<span class="number">0</span>],res[len]] = [res[len],res[<span class="number">0</span>]];</span><br><span class="line">        changeheap(arr,<span class="number">0</span>,len);</span><br><span class="line">    &#125;</span><br><span class="line">  <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">maxheap</span>(<span class="params">arr</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> res = arr;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> index = <span class="built_in">Math</span>.floor(res.length/<span class="number">2</span>); index &gt; -<span class="number">1</span>; index--) &#123;</span><br><span class="line">      changeheap(res,index,res.length);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">changeheap</span>(<span class="params">arr, index,len</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> left = index * <span class="number">2</span> + <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">let</span> right = index * <span class="number">2</span> + <span class="number">2</span>;</span><br><span class="line">  <span class="keyword">let</span> max = index;</span><br><span class="line">  <span class="keyword">if</span> (left&lt;len &amp;&amp; arr[left] &gt; arr[max]) &#123;</span><br><span class="line">    max = left;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span>(right&lt;len &amp;&amp; arr[right] &gt; arr[max])&#123;</span><br><span class="line">    max = right;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span>(max != index)&#123;</span><br><span class="line">      <span class="comment">//如果当前值不是最大就和子节点最大的交换，和谁交换就调整谁</span></span><br><span class="line">      [arr[index],arr[max]] = [arr[max],arr[index]];</span><br><span class="line">      changeheap(arr,max,len);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> test = [<span class="number">9</span>,<span class="number">5</span>,<span class="number">3</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">3</span>,<span class="number">1</span>];</span><br><span class="line"><span class="built_in">console</span>.log(heapsort(test));</span><br></pre></td></tr></table></figure>
+<p>进行堆排序的过程首先要先建堆，构建大堆顶或者小堆顶都可。然后把堆顶和堆尾元素进行交换(交换的堆尾不参与堆调整)，然后进行堆调整,对于堆调整引起的子结点的变化的进行递归调整。</p>
+]]></content>
+      <categories>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>JavaScript</tag>
       </tags>
   </entry>
 </search>
